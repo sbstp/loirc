@@ -1,8 +1,6 @@
 use std::io::{self, BufRead, BufStream, Write};
 use std::net::{TcpStream, ToSocketAddrs};
 
-use message::{Message, ParseError};
-
 pub struct Client {
     stream: BufStream<TcpStream>,
 }
@@ -10,7 +8,7 @@ pub struct Client {
 impl Client {
 
     pub fn new<A: ToSocketAddrs>(addr: A) -> io::Result<Client> {
-        let mut stream = try!(TcpStream::connect(addr));
+        let stream = try!(TcpStream::connect(addr));
         Ok(Client{
             stream: BufStream::new(stream),
         })
