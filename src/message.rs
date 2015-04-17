@@ -20,7 +20,7 @@ impl<'a> Message<'a> {
             return Err(ParseError::EmptyMessage);
         }
 
-        let mut state = &line[..];
+        let mut state = line.trim_right_matches("\r\n");
         let mut prefix: Option<&str> = None;
         let mut command: Option<&str> = None;
         let mut args: Vec<&str> = Vec::new();
