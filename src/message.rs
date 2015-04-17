@@ -1,7 +1,7 @@
-#[derive(Debug)]
 /// A borrowed variant of the message struct.
 /// All the fields are borrowed.
 /// This makes the API much nicer to use.
+#[derive(Debug)]
 pub struct Message<'a> {
     /// Prefix
     pub prefix: Option<&'a str>,
