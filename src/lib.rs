@@ -2,4 +2,4 @@ mod client;
 mod message;
 
 pub use client::Client;
-pub use message::{Message, ParseError};
+pub use message::{Message, OwnedMessage, ParseError};

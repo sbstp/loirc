@@ -1,20 +1,16 @@
 #[derive(Debug)]
+/// A borrowed variant of the message struct.
+/// All the fields are borrowed.
+/// This makes the API much nicer to use.
 pub struct Message<'a> {
-    // Prefix
+    /// Prefix
     pub prefix: Option<&'a str>,
-    // Command or reply
+    /// Command/Reply
     pub command: &'a str,
-    // Arguments
+    /// Arguments
     pub args: Vec<&'a str>,
-    // Suffix
+    /// Suffix
     pub suffix: Option<&'a str>,
-}
-
-#[derive(Debug, Eq, PartialEq)]
-pub enum ParseError {
-    EmptyCommand,
-    EmptyMessage,
-    UnexpectedEnd,
 }
 
 impl<'a> Message<'a> {
@@ -89,6 +85,63 @@ impl<'a> Message<'a> {
             args: args,
             suffix: suffix,
         })
+    }
+
+    pub fn to_owned(&self) -> OwnedMessage {
+        let mut args: Vec<String> = Vec::new();
+
+        for arg in self.args.iter() {
+            args.push(arg.to_string());
+        }
+
+        OwnedMessage {
+            prefix: self.prefix.as_ref().map(|s| s.to_string()),
+            command: self.command.to_string(),
+            args: args,
+            suffix: self.suffix.as_ref().map(|s| s.to_string()),
+        }
+    }
+
+}
+
+
+#[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
+pub enum ParseError {
+    EmptyCommand,
+    EmptyMessage,
+    UnexpectedEnd,
+}
+
+/// An owned variant of the Message struct.
+/// All the field are owned.
+/// This makes it easier to send messages to other threads.
+#[derive(Clone, Debug)]
+pub struct OwnedMessage {
+    /// Prefix
+    pub prefix: Option<String>,
+    /// Command/Reply
+    pub command: String,
+    /// Arguments
+    pub args: Vec<String>,
+    /// Suffix
+    pub suffix: Option<String>,
+}
+
+impl OwnedMessage {
+
+    pub fn borrow<'a>(&'a self) -> Message<'a> {
+        let mut args = Vec::new();
+
+        for arg in self.args.iter() {
+            args.push(&arg[..]);
+        }
+
+        Message {
+            prefix: self.prefix.as_ref().map(|s| &s[..]),
+            command: &self.command[..],
+            args: args,
+            suffix: self.suffix.as_ref().map(|s| &s[..]),
+        }
     }
 
 }
