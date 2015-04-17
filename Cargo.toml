@@ -1,0 +1,4 @@
+[package]
+name = "irc"
+version = "0.1.0"
+authors = ["Simon Bernier St-Pierre <sbernierstpierre@gmail.com>"]
