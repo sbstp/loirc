@@ -1,6 +1,8 @@
 use std::io::{self, BufRead, BufStream, Write};
 use std::net::{TcpStream, ToSocketAddrs};
 
+use message::{Message, OwnedMessage, ParseError};
+
 pub struct Client {
     stream: BufStream<TcpStream>,
 }
@@ -31,10 +33,29 @@ impl Client {
         self.send(format!("JOIN {}", channel))
     }
 
-    pub fn get(&mut self) -> io::Result<String> {
+    pub fn read(&mut self) -> Result<OwnedMessage, ReadError> {
         let mut line = String::new();
         try!(self.stream.read_line(&mut line));
-        Ok(line)
+        let msg = try!(Message::parse(&line[..]));
+        Ok(msg.to_owned())
     }
 
+}
+
+#[derive(Debug)]
+pub enum ReadError {
+    IoError(io::Error),
+    ParseError(ParseError),
+}
+
+impl From<io::Error> for ReadError {
+    fn from(err: io::Error) -> ReadError {
+        ReadError::IoError(err)
+    }
+}
+
+impl From<ParseError> for ReadError {
+    fn from(err: ParseError) -> ReadError {
+        ReadError::ParseError(err)
+    }
 }
