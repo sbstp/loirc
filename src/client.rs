@@ -40,6 +40,10 @@ impl Client {
         self.send_raw(format!("PRIVMSG {} :{}", channel, msg))
     }
 
+    pub fn pong(&mut self, payload: &str) -> io::Result<()> {
+        self.send_raw(format!("PONG :{}", payload))
+    }
+
     pub fn read(&mut self) -> Result<OwnedMessage, ReadError> {
         let mut line = String::new();
         try!(self.buf.read_line(&mut line));
