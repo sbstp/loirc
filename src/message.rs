@@ -1,10 +1,17 @@
+#[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
+pub enum ParseError {
+    EmptyCommand,
+    EmptyMessage,
+    UnexpectedEnd,
+}
+
 /// A borrowed variant of the message struct.
 /// All the fields are borrowed.
 /// This makes the API much nicer to use.
-#[derive(Debug)]
+#[derive(Debug, Eq, PartialEq)]
 pub struct Message<'a> {
     /// Prefix
-    pub prefix: Option<&'a str>,
+    pub prefix: Option<Prefix<'a>>,
     /// Command/Reply
     pub command: &'a str,
     /// Arguments
@@ -21,7 +28,7 @@ impl<'a> Message<'a> {
         }
 
         let mut state = line.trim_right_matches("\r\n");
-        let mut prefix: Option<&str> = None;
+        let mut prefix: Option<Prefix> = None;
         let mut command: Option<&str> = None;
         let mut args: Vec<&str> = Vec::new();
         let mut suffix: Option<&str> = None;
@@ -31,7 +38,7 @@ impl<'a> Message<'a> {
             match state.find(" ") {
                 None => return Err(ParseError::UnexpectedEnd),
                 Some(idx) => {
-                    prefix = Some(&state[1..idx]);
+                    prefix = parse_prefix(&state[1..idx]);
                     state = &state[idx + 1..];
                 }
             }
@@ -87,29 +94,6 @@ impl<'a> Message<'a> {
         })
     }
 
-    pub fn prefix(&self) -> Option<Prefix> {
-        let prefix = match self.prefix {
-            None => return None,
-            Some(prefix) => prefix,
-        };
-
-        match prefix.find("!") {
-            None => Some(Prefix::Server(prefix)),
-            Some(excpos) => {
-                let nick = &prefix[..excpos];
-                let rest = &prefix[excpos + 1..];
-                match rest.find("@") {
-                    None => return None,
-                    Some(atpos) => {
-                        let user = &rest[..atpos];
-                        let host = &rest[atpos + 1..];
-                        return Some(Prefix::User(User::new(nick, user, host)));
-                    }
-                }
-            }
-        }
-    }
-
     pub fn to_owned(&self) -> OwnedMessage {
         let mut args: Vec<String> = Vec::new();
 
@@ -118,7 +102,7 @@ impl<'a> Message<'a> {
         }
 
         OwnedMessage {
-            prefix: self.prefix.as_ref().map(|s| s.to_string()),
+            prefix: self.prefix.as_ref().map(|s| s.to_owned()),
             command: self.command.to_string(),
             args: args,
             suffix: self.suffix.as_ref().map(|s| s.to_string()),
@@ -127,20 +111,90 @@ impl<'a> Message<'a> {
 
 }
 
+fn parse_prefix(prefix: &str) -> Option<Prefix> {
+    match prefix.find("!") {
+        None => Some(Prefix::Server(prefix)),
+        Some(excpos) => {
+            let nick = &prefix[..excpos];
+            let rest = &prefix[excpos + 1..];
+            match rest.find("@") {
+                None => return None,
+                Some(atpos) => {
+                    let user = &rest[..atpos];
+                    let host = &rest[atpos + 1..];
+                    return Some(Prefix::User(User::new(nick, user, host)));
+                }
+            }
+        }
+    }
+}
 
-#[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
-pub enum ParseError {
-    EmptyCommand,
-    EmptyMessage,
-    UnexpectedEnd,
+/// An owned variant of the Message struct.
+/// All the field are owned.
+/// This makes it easier to send messages to other threads.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct OwnedMessage {
+    /// Prefix
+    pub prefix: Option<OwnedPrefix>,
+    /// Command/Reply
+    pub command: String,
+    /// Arguments
+    pub args: Vec<String>,
+    /// Suffix
+    pub suffix: Option<String>,
+}
+
+impl OwnedMessage {
+
+    pub fn borrow<'a>(&'a self) -> Message<'a> {
+        let mut args = Vec::new();
+
+        for arg in self.args.iter() {
+            args.push(&arg[..]);
+        }
+
+        Message {
+            prefix: self.prefix.as_ref().map(|s| s.borrow()),
+            command: &self.command[..],
+            args: args,
+            suffix: self.suffix.as_ref().map(|s| &s[..]),
+        }
+    }
+
 }
 
 #[derive(Debug, Eq, PartialEq)]
 pub enum Prefix<'a> {
-    // Nick, User, Host
     User(User<'a>),
-    // Server
     Server(&'a str),
+}
+
+impl<'a> Prefix<'a> {
+
+    pub fn to_owned(&self) -> OwnedPrefix {
+        match *self {
+            Prefix::User(ref user) => OwnedPrefix::User(user.to_owned()),
+            Prefix::Server(ref serv) => OwnedPrefix::Server(serv.to_string()),
+        }
+    }
+
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum OwnedPrefix {
+    User(OwnedUser),
+    Server(String),
+}
+
+impl OwnedPrefix {
+
+    pub fn borrow(&self) -> Prefix {
+        match *self {
+            OwnedPrefix::User(ref user) => Prefix::User(user.borrow()),
+            OwnedPrefix::Server(ref serv) => Prefix::Server(&serv[..]),
+        }
+    }
+
 }
 
 #[derive(Debug, Eq, PartialEq)]
@@ -160,37 +214,38 @@ impl<'a> User<'a> {
         }
     }
 
-}
-
-/// An owned variant of the Message struct.
-/// All the field are owned.
-/// This makes it easier to send messages to other threads.
-#[derive(Clone, Debug)]
-pub struct OwnedMessage {
-    /// Prefix
-    pub prefix: Option<String>,
-    /// Command/Reply
-    pub command: String,
-    /// Arguments
-    pub args: Vec<String>,
-    /// Suffix
-    pub suffix: Option<String>,
-}
-
-impl OwnedMessage {
-
-    pub fn borrow<'a>(&'a self) -> Message<'a> {
-        let mut args = Vec::new();
-
-        for arg in self.args.iter() {
-            args.push(&arg[..]);
+    pub fn to_owned(&self) -> OwnedUser {
+        OwnedUser {
+            nick: self.nick.to_string(),
+            user: self.user.to_string(),
+            host: self.host.to_string(),
         }
+    }
 
-        Message {
-            prefix: self.prefix.as_ref().map(|s| &s[..]),
-            command: &self.command[..],
-            args: args,
-            suffix: self.suffix.as_ref().map(|s| &s[..]),
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct OwnedUser {
+    nick: String,
+    user: String,
+    host: String,
+}
+
+impl OwnedUser {
+
+    pub fn new(nick: String, user: String, host: String) -> OwnedUser {
+        OwnedUser {
+            nick: nick,
+            user: user,
+            host: host,
+        }
+    }
+
+    pub fn borrow(&self) -> User {
+        User {
+            nick: &self.nick[..],
+            user: &self.user[..],
+            host: &self.host[..],
         }
     }
 
@@ -201,7 +256,6 @@ fn test_full() {
     let res = Message::parse(":org.prefix.cool COMMAND arg1 arg2 arg3 :suffix is pretty cool yo");
     assert!(res.is_ok());
     let msg = res.ok().unwrap();
-    assert_eq!(msg.prefix, Some("org.prefix.cool"));
     assert_eq!(msg.command, "COMMAND");
     assert_eq!(msg.args, vec!["arg1", "arg2", "arg3"]);
     assert_eq!(msg.suffix, Some("suffix is pretty cool yo"));
@@ -223,7 +277,6 @@ fn test_no_suffix() {
     let res = Message::parse(":org.prefix.cool COMMAND arg1 arg2 arg3");
     assert!(res.is_ok());
     let msg = res.ok().unwrap();
-    assert_eq!(msg.prefix, Some("org.prefix.cool"));
     assert_eq!(msg.command, "COMMAND");
     assert_eq!(msg.args, vec!["arg1", "arg2", "arg3"]);
     assert_eq!(msg.suffix, None);
@@ -234,7 +287,6 @@ fn test_no_args() {
     let res = Message::parse(":org.prefix.cool COMMAND :suffix is pretty cool yo");
     assert!(res.is_ok());
     let msg = res.ok().unwrap();
-    assert_eq!(msg.prefix, Some("org.prefix.cool"));
     assert_eq!(msg.command, "COMMAND");
     assert_eq!(msg.args.len(), 0);
     assert_eq!(msg.suffix, Some("suffix is pretty cool yo"));
@@ -280,7 +332,7 @@ fn test_prefix_none() {
     let res = Message::parse("COMMAND :suffix is pretty cool yo");
     assert!(res.is_ok());
     let msg = res.ok().unwrap();
-    assert!(msg.prefix() == None);
+    assert!(msg.prefix == None);
 }
 
 #[test]
@@ -288,7 +340,7 @@ fn test_prefix_server() {
     let res = Message::parse(":irc.freenode.net COMMAND :suffix is pretty cool yo");
     assert!(res.is_ok());
     let msg = res.ok().unwrap();
-    assert_eq!(msg.prefix(), Some(Prefix::Server("irc.freenode.net")));
+    assert_eq!(msg.prefix, Some(Prefix::Server("irc.freenode.net")));
 }
 
 #[test]
@@ -296,5 +348,5 @@ fn test_prefix_user() {
     let res = Message::parse(":bob!bob@bob.com COMMAND :suffix is pretty cool yo");
     assert!(res.is_ok());
     let msg = res.ok().unwrap();
-    assert_eq!(msg.prefix(), Some(Prefix::User(User::new("bob", "bob", "bob.com"))));
+    assert_eq!(msg.prefix, Some(Prefix::User(User::new("bob", "bob", "bob.com"))));
 }
