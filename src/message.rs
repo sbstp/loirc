@@ -87,6 +87,29 @@ impl<'a> Message<'a> {
         })
     }
 
+    pub fn prefix(&self) -> Option<Prefix> {
+        let prefix = match self.prefix {
+            None => return None,
+            Some(prefix) => prefix,
+        };
+
+        match prefix.find("!") {
+            None => Some(Prefix::Server(prefix)),
+            Some(excpos) => {
+                let nick = &prefix[..excpos];
+                let rest = &prefix[excpos + 1..];
+                match rest.find("@") {
+                    None => return None,
+                    Some(atpos) => {
+                        let user = &rest[..atpos];
+                        let host = &rest[atpos + 1..];
+                        return Some(Prefix::User(nick, user, host));
+                    }
+                }
+            }
+        }
+    }
+
     pub fn to_owned(&self) -> OwnedMessage {
         let mut args: Vec<String> = Vec::new();
 
@@ -110,6 +133,14 @@ pub enum ParseError {
     EmptyCommand,
     EmptyMessage,
     UnexpectedEnd,
+}
+
+#[derive(Debug, Eq, PartialEq)]
+pub enum Prefix<'a> {
+    // Nick, User, Host
+    User(&'a str, &'a str, &'a str),
+    // Server
+    Server(&'a str),
 }
 
 /// An owned variant of the Message struct.
@@ -223,4 +254,28 @@ fn test_only_prefix() {
     assert!(res.is_err());
     let err = res.err().unwrap();
     assert!(err == ParseError::UnexpectedEnd);
+}
+
+#[test]
+fn test_prefix_none() {
+    let res = Message::parse("COMMAND :suffix is pretty cool yo");
+    assert!(res.is_ok());
+    let msg = res.ok().unwrap();
+    assert!(msg.prefix() == None);
+}
+
+#[test]
+fn test_prefix_server() {
+    let res = Message::parse(":irc.freenode.net COMMAND :suffix is pretty cool yo");
+    assert!(res.is_ok());
+    let msg = res.ok().unwrap();
+    assert_eq!(msg.prefix(), Some(Prefix::Server("irc.freenode.net")));
+}
+
+#[test]
+fn test_prefix_user() {
+    let res = Message::parse(":bob!bob@bob.com COMMAND :suffix is pretty cool yo");
+    assert!(res.is_ok());
+    let msg = res.ok().unwrap();
+    assert_eq!(msg.prefix(), Some(Prefix::User("bob", "bob", "bob.com")));
 }
