@@ -103,7 +103,7 @@ impl<'a> Message<'a> {
                     Some(atpos) => {
                         let user = &rest[..atpos];
                         let host = &rest[atpos + 1..];
-                        return Some(Prefix::User(nick, user, host));
+                        return Some(Prefix::User(User::new(nick, user, host)));
                     }
                 }
             }
@@ -138,9 +138,28 @@ pub enum ParseError {
 #[derive(Debug, Eq, PartialEq)]
 pub enum Prefix<'a> {
     // Nick, User, Host
-    User(&'a str, &'a str, &'a str),
+    User(User<'a>),
     // Server
     Server(&'a str),
+}
+
+#[derive(Debug, Eq, PartialEq)]
+pub struct User<'a> {
+    nick: &'a str,
+    user: &'a str,
+    host: &'a str,
+}
+
+impl<'a> User<'a> {
+
+    pub fn new<'b>(nick: &'b str, user: &'b str, host: &'b str) -> User<'b> {
+        User {
+            nick: nick,
+            user: user,
+            host: host,
+        }
+    }
+
 }
 
 /// An owned variant of the Message struct.
@@ -277,5 +296,5 @@ fn test_prefix_user() {
     let res = Message::parse(":bob!bob@bob.com COMMAND :suffix is pretty cool yo");
     assert!(res.is_ok());
     let msg = res.ok().unwrap();
-    assert_eq!(msg.prefix(), Some(Prefix::User("bob", "bob", "bob.com")));
+    assert_eq!(msg.prefix(), Some(Prefix::User(User::new("bob", "bob", "bob.com"))));
 }
