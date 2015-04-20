@@ -4,7 +4,7 @@
 use std::fmt;
 use std::str;
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub enum Code {
     Pass,
     Nick,
@@ -188,6 +188,7 @@ pub enum Code {
     ErrNooperhost,
     ErrUmodeunknownflag,
     ErrUsersdontmatch,
+    Unknown(String),
 }
 
 impl Code {
@@ -529,6 +530,7 @@ impl fmt::Display for Code {
             Code::ErrNooperhost => "491",
             Code::ErrUmodeunknownflag => "501",
             Code::ErrUsersdontmatch => "502",
+            Code::Unknown(ref text) => &text[..],
         };
         f.write_str(text)
     }
@@ -722,9 +724,8 @@ impl str::FromStr for Code {
             "491" => Code::ErrNooperhost,
             "501" => Code::ErrUmodeunknownflag,
             "502" => Code::ErrUsersdontmatch,
-            _ => return Err(()),
+            _ => Code::Unknown(s.to_string()),
         };
         Ok(code)
     }
 }
-

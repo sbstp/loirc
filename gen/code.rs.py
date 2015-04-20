@@ -8,10 +8,11 @@ def gen_header():
     print "use std::str;"
 
 def gen_enum(codes):
-    print "#[derive(Clone, Copy, Debug, Eq, PartialEq)]"
+    print "#[derive(Clone, Debug, Eq, PartialEq)]"
     print "pub enum Code {"
     for code in codes:
         print "    " + code.format_code + ","
+    print "    Unknown(String),"
     print "}"
 
 def gen_methods(codes):
@@ -44,6 +45,7 @@ def gen_display(codes):
     print "        let text = match *self {"
     for code in codes:
         print "            Code::" + code.format_code + " => " + code.format_value + ","
+    print "            Code::Unknown(ref text) => &text[..],"
     print "        };"
     print "        f.write_str(text)"
     print "    }"
@@ -58,7 +60,7 @@ def gen_fromstr(codes):
     print "        let code = match s {"
     for code in codes:
         print "            " + code.format_value + " => Code::" + code.format_code + ","
-    print "            _ => return Err(()),"
+    print "            _ => Code::Unknown(s.to_string()),"
     print "        };"
     print "        Ok(code)"
     print "    }"
@@ -75,4 +77,3 @@ if __name__ == '__main__':
     gen_display(codes)
     print
     gen_fromstr(codes)
-    print
