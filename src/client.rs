@@ -1,7 +1,7 @@
 use std::io::{self, BufRead, BufStream, Write};
 use std::net::{TcpStream, ToSocketAddrs};
 
-use message::{Message, OwnedMessage, ParseError};
+use message::{Message, ParseError};
 
 pub struct Client {
     stream: TcpStream,
@@ -44,11 +44,10 @@ impl Client {
         self.send_raw(format!("PONG :{}", payload))
     }
 
-    pub fn read(&mut self) -> Result<OwnedMessage, ReadError> {
+    pub fn read(&mut self) -> Result<Message, ReadError> {
         let mut line = String::new();
         try!(self.buf.read_line(&mut line));
-        let msg = try!(Message::parse(&line[..]));
-        Ok(msg.to_owned())
+        Ok(try!(Message::parse(&line[..])))
     }
 
     pub fn try_clone(&self) -> io::Result<Client> {
