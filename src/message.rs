@@ -1,3 +1,5 @@
+use code::Code;
+
 #[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
 pub enum ParseError {
     EmptyCommand,
@@ -13,7 +15,7 @@ pub struct Message {
     /// Prefix
     pub prefix: Option<Prefix>,
     /// Command/Reply
-    pub command: String,
+    pub code: Code,
     /// Arguments
     pub args: Vec<String>,
     /// Suffix
@@ -29,7 +31,7 @@ impl Message {
 
         let mut state = line.trim_right_matches("\r\n");
         let mut prefix: Option<Prefix> = None;
-        let mut command: Option<String> = None;
+        let mut code: Option<String> = None;
         let mut args: Vec<String> = Vec::new();
         let mut suffix: Option<String> = None;
 
@@ -50,12 +52,12 @@ impl Message {
                 if state.len() == 0 {
                     return Err(ParseError::EmptyMessage);
                 } else {
-                    command = Some(state[..].to_string());
+                    code = Some(state[..].to_string());
                     state = &state[state.len()..];
                 }
             }
             Some(idx) => {
-                command = Some(state[..idx].to_string());
+                code = Some(state[..idx].to_string());
                 state = &state[idx + 1..];
             }
         }
@@ -81,14 +83,19 @@ impl Message {
             }
         }
 
-        let cmd = match command {
+        let tcode = match code {
             None => return Err(ParseError::EmptyCommand),
-            Some(cmd) => cmd,
+            Some(text) => {
+                match text.parse() {
+                    Ok(code) => code,
+                    Err(_) => Code::Unknown(text),
+                }
+            }
         };
 
         Ok(Message {
             prefix: prefix,
-            command: cmd,
+            code: tcode,
             args: args,
             suffix: suffix,
         })
@@ -143,49 +150,49 @@ fn test_full() {
     let res = Message::parse(":org.prefix.cool COMMAND arg1 arg2 arg3 :suffix is pretty cool yo");
     assert!(res.is_ok());
     let msg = res.ok().unwrap();
-    assert_eq!(msg.command, "COMMAND");
+    assert_eq!(msg.code, Code::Unknown("COMMAND".to_string()));
     assert_eq!(msg.args, vec!["arg1", "arg2", "arg3"]);
     assert_eq!(msg.suffix, Some("suffix is pretty cool yo".to_string()));
 }
 
 #[test]
 fn test_no_prefix() {
-    let res = Message::parse("COMMAND arg1 arg2 arg3 :suffix is pretty cool yo");
+    let res = Message::parse("NICK arg1 arg2 arg3 :suffix is pretty cool yo");
     assert!(res.is_ok());
     let msg = res.ok().unwrap();
     assert_eq!(msg.prefix, None);
-    assert_eq!(msg.command, "COMMAND");
+    assert_eq!(msg.code, Code::Nick);
     assert_eq!(msg.args, vec!["arg1", "arg2", "arg3"]);
     assert_eq!(msg.suffix, Some("suffix is pretty cool yo".to_string()));
 }
 
 #[test]
 fn test_no_suffix() {
-    let res = Message::parse(":org.prefix.cool COMMAND arg1 arg2 arg3");
+    let res = Message::parse(":org.prefix.cool NICK arg1 arg2 arg3");
     assert!(res.is_ok());
     let msg = res.ok().unwrap();
-    assert_eq!(msg.command, "COMMAND");
+    assert_eq!(msg.code, Code::Nick);
     assert_eq!(msg.args, vec!["arg1", "arg2", "arg3"]);
     assert_eq!(msg.suffix, None);
 }
 
 #[test]
 fn test_no_args() {
-    let res = Message::parse(":org.prefix.cool COMMAND :suffix is pretty cool yo");
+    let res = Message::parse(":org.prefix.cool NICK :suffix is pretty cool yo");
     assert!(res.is_ok());
     let msg = res.ok().unwrap();
-    assert_eq!(msg.command, "COMMAND");
+    assert_eq!(msg.code, Code::Nick);
     assert_eq!(msg.args.len(), 0);
     assert_eq!(msg.suffix, Some("suffix is pretty cool yo".to_string()));
 }
 
 #[test]
 fn test_only_command() {
-    let res = Message::parse("COMMAND");
+    let res = Message::parse("NICK");
     assert!(res.is_ok());
     let msg = res.ok().unwrap();
     assert_eq!(msg.prefix, None);
-    assert_eq!(msg.command, "COMMAND");
+    assert_eq!(msg.code, Code::Nick);
     assert_eq!(msg.args.len(), 0);
     assert_eq!(msg.suffix, None);
 }
