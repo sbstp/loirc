@@ -10,30 +10,30 @@ pub enum ParseError {
 /// An owned variant of the Message struct.
 /// All the field are owned.
 /// This makes it easier to send messages to other threads.
-#[derive(Debug, Eq, PartialEq)]
-pub struct Message<'a> {
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct Message {
     /// Prefix
-    pub prefix: Option<Prefix<'a>>,
+    pub prefix: Option<Prefix>,
     /// Command/Reply
     pub code: Code,
     /// Arguments
-    pub args: Vec<&'a str>,
+    pub args: Vec<String>,
     /// Suffix
-    pub suffix: Option<&'a str>,
+    pub suffix: Option<String>,
 }
 
-impl<'a> Message<'a> {
+impl Message {
 
-    pub fn parse<'b>(line: &'b str) -> Result<Message<'b>, ParseError> {
+    pub fn parse(line: &str) -> Result<Message, ParseError> {
         if line.len() == 0 || line.trim().len() == 0 {
             return Err(ParseError::EmptyMessage);
         }
 
         let mut state = line.trim_right_matches("\r\n");
         let mut prefix: Option<Prefix> = None;
-        let mut code: Option<&str> = None;
-        let mut args: Vec<&str> = Vec::new();
-        let mut suffix: Option<&str> = None;
+        let mut code: Option<String>;
+        let mut args: Vec<String> = Vec::new();
+        let mut suffix: Option<String> = None;
 
         // Look for a prefix
         if state.starts_with(":") {
@@ -52,12 +52,12 @@ impl<'a> Message<'a> {
                 if state.len() == 0 {
                     return Err(ParseError::EmptyMessage);
                 } else {
-                    code = Some(&state[..]);
+                    code = Some(state[..].to_string());
                     state = &state[state.len()..];
                 }
             }
             Some(idx) => {
-                code = Some(&state[..idx]);
+                code = Some(state[..idx].to_string());
                 state = &state[idx + 1..];
             }
         }
@@ -66,16 +66,16 @@ impl<'a> Message<'a> {
         if state.len() > 0 {
             loop {
                 if state.starts_with(":") {
-                    suffix = Some(&state[1..]);
+                    suffix = Some(state[1..].to_string());
                     break;
                 } else {
                     match state.find(" ") {
                         None => {
-                            args.push(&state[..]);
+                            args.push(state[..].to_string());
                             break;
                         }
                         Some(idx) => {
-                            args.push(&state[..idx]);
+                            args.push(state[..idx].to_string());
                             state = &state[idx + 1..];
                         }
                     }
@@ -83,7 +83,7 @@ impl<'a> Message<'a> {
             }
         }
 
-        let tcode = match code {
+        let code = match code {
             None => return Err(ParseError::EmptyCommand),
             Some(text) => {
                 match text.parse() {
@@ -95,7 +95,7 @@ impl<'a> Message<'a> {
 
         Ok(Message {
             prefix: prefix,
-            code: tcode,
+            code: code,
             args: args,
             suffix: suffix,
         })
@@ -104,7 +104,7 @@ impl<'a> Message<'a> {
 
 fn parse_prefix(prefix: &str) -> Option<Prefix> {
     match prefix.find("!") {
-        None => Some(Prefix::Server(prefix)),
+        None => Some(Prefix::Server(prefix.to_string())),
         Some(excpos) => {
             let nick = &prefix[..excpos];
             let rest = &prefix[excpos + 1..];
@@ -120,26 +120,26 @@ fn parse_prefix(prefix: &str) -> Option<Prefix> {
     }
 }
 
-#[derive(Debug, Eq, PartialEq)]
-pub enum Prefix<'a> {
-    User(User<'a>),
-    Server(&'a str),
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum Prefix {
+    User(User),
+    Server(String),
 }
 
-#[derive(Debug, Eq, PartialEq)]
-pub struct User<'a> {
-    nick: &'a str,
-    user: &'a str,
-    host: &'a str,
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct User {
+    nick: String,
+    user: String,
+    host: String,
 }
 
-impl<'a> User<'a> {
+impl User {
 
-    pub fn new<'b>(nick: &'b str, user: &'b str, host: &'b str) -> User<'b> {
+    pub fn new(nick: &str, user: &str, host: &str) -> User {
         User {
-            nick: nick,
-            user: user,
-            host: host,
+            nick: nick.to_string(),
+            user: user.to_string(),
+            host: host.to_string(),
         }
     }
 
@@ -152,7 +152,7 @@ fn test_full() {
     let msg = res.ok().unwrap();
     assert_eq!(msg.code, Code::Unknown("COMMAND".to_string()));
     assert_eq!(msg.args, vec!["arg1", "arg2", "arg3"]);
-    assert_eq!(msg.suffix, Some("suffix is pretty cool yo"));
+    assert_eq!(msg.suffix, Some("suffix is pretty cool yo".to_string()));
 }
 
 #[test]
@@ -163,7 +163,7 @@ fn test_no_prefix() {
     assert_eq!(msg.prefix, None);
     assert_eq!(msg.code, Code::Nick);
     assert_eq!(msg.args, vec!["arg1", "arg2", "arg3"]);
-    assert_eq!(msg.suffix, Some("suffix is pretty cool yo"));
+    assert_eq!(msg.suffix, Some("suffix is pretty cool yo".to_string()));
 }
 
 #[test]
@@ -183,7 +183,7 @@ fn test_no_args() {
     let msg = res.ok().unwrap();
     assert_eq!(msg.code, Code::Nick);
     assert_eq!(msg.args.len(), 0);
-    assert_eq!(msg.suffix, Some("suffix is pretty cool yo"));
+    assert_eq!(msg.suffix, Some("suffix is pretty cool yo".to_string()));
 }
 
 #[test]
@@ -234,7 +234,7 @@ fn test_prefix_server() {
     let res = Message::parse(":irc.freenode.net COMMAND :suffix is pretty cool yo");
     assert!(res.is_ok());
     let msg = res.ok().unwrap();
-    assert_eq!(msg.prefix, Some(Prefix::Server("irc.freenode.net")));
+    assert_eq!(msg.prefix, Some(Prefix::Server("irc.freenode.net".to_string())));
 }
 
 #[test]
