@@ -94,6 +94,11 @@ impl<'a> IrcConnection<'a> {
         self.raw(format!("PRIVMSG {} :{}", target.as_ref(), message.as_ref()))
     }
 
+    /// PONG
+    pub fn pong<S: AsRef<str>>(&mut self, payload: S) -> io::Result<()> {
+        self.raw(format!("PONG :{}", payload.as_ref()))
+    }
+
     /// Send a raw message to the IRC server.
     /// Line endings are added by this method.
     pub fn raw<S: AsRef<str>>(&mut self, raw: S) -> io::Result<()> {
