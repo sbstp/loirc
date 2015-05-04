@@ -4,7 +4,11 @@ use std::net::{TcpStream, ToSocketAddrs};
 
 use message::{Message, ParseError};
 
-pub struct IrcConnection {
+pub struct IrcConnection<'a> {
+    pub username: &'a str,
+    pub realname: &'a str,
+    pub nickname: &'a str,
+    pub password: Option<&'a str>,
     buf: BufStream<TcpStream>,
 }
 
@@ -23,29 +27,50 @@ impl From<ParseError> for IrcError {
 }
 
 /// Connection
-impl IrcConnection {
+impl<'a> IrcConnection<'a> {
 
-    pub fn new<A: ToSocketAddrs>(addr: A) -> io::Result<IrcConnection> {
+    pub fn new<'b, A: ToSocketAddrs>(addr: A,
+                username: &'b str,
+                realname: &'b str,
+                nickname: &'b str,
+                password: Option<&'b str>) -> io::Result<IrcConnection<'b>> {
         let stream = try!(TcpStream::connect(addr));
         let buf = BufStream::new(stream);
-        Ok(IrcConnection{
+
+        let mut con = IrcConnection {
+            username: username,
+            realname: realname,
+            nickname: nickname,
+            password: password,
             buf: buf,
-        })
+        };
+
+        try!(con.pass());
+        try!(con.nick());
+        try!(con.user());
+
+        Ok(con)
     }
 
     /// USER
-    pub fn user<S: AsRef<str>>(&mut self, username: S, realname: S) -> io::Result<()> {
-        self.raw(format!("USER {} 8 * :{}", username.as_ref(), realname.as_ref()))
+    fn user(&mut self) -> io::Result<()> {
+        let cmd = format!("USER {} 8 * :{}", self.username, self.realname);
+        self.raw(cmd)
     }
 
     /// PASS
-    pub fn pass<S: AsRef<str>>(&mut self, password: S) -> io::Result<()> {
-        self.raw(format!("PASS {}", password.as_ref()))
+    fn pass(&mut self) -> io::Result<()> {
+        match self.password {
+            Some(password) => self.raw(format!("PASS {}", password)),
+            None => Ok(())
+        }
+
     }
 
     /// NICK
-    pub fn nick<S: AsRef<str>>(&mut self, nickname: S) -> io::Result<()> {
-        self.raw(format!("NICK {}", nickname.as_ref()))
+    fn nick(&mut self) -> io::Result<()> {
+        let cmd = format!("NICK {}", self.nickname);
+        self.raw(cmd)
     }
 
     /// JOIN
