@@ -31,7 +31,7 @@ impl Message {
 
         let mut state = line.trim_right_matches("\r\n");
         let mut prefix: Option<Prefix> = None;
-        let mut code: Option<String>;
+        let code: Option<String>;
         let mut args: Vec<String> = Vec::new();
         let mut suffix: Option<String> = None;
 

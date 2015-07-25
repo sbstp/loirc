@@ -1,5 +1,5 @@
 use std::convert::AsRef;
-use std::io::{self, BufRead, BufStream, Write};
+use std::io::{self, BufRead, BufReader, BufWriter, Write};
 use std::net::{TcpStream, ToSocketAddrs};
 
 use message::{Message, ParseError};
@@ -9,7 +9,8 @@ pub struct IrcConnection<'a> {
     pub realname: &'a str,
     pub nickname: &'a str,
     pub password: Option<&'a str>,
-    buf: BufStream<TcpStream>,
+    reader: BufReader<TcpStream>,
+    writer: BufWriter<TcpStream>,
 }
 
 #[derive(Debug)]
@@ -35,14 +36,14 @@ impl<'a> IrcConnection<'a> {
                 nickname: &'b str,
                 password: Option<&'b str>) -> io::Result<IrcConnection<'b>> {
         let stream = try!(TcpStream::connect(addr));
-        let buf = BufStream::new(stream);
 
         let mut con = IrcConnection {
             username: username,
             realname: realname,
             nickname: nickname,
             password: password,
-            buf: buf,
+            reader: BufReader::new(try!(stream.try_clone())),
+            writer: BufWriter::new(try!(stream.try_clone())),
         };
 
         try!(con.pass());
@@ -102,15 +103,15 @@ impl<'a> IrcConnection<'a> {
     /// Send a raw message to the IRC server.
     /// Line endings are added by this method.
     pub fn raw<S: AsRef<str>>(&mut self, raw: S) -> io::Result<()> {
-        try!(write!(self.buf, "{}\r\n", raw.as_ref()));
-        self.buf.flush()
+        try!(write!(self.writer, "{}\r\n", raw.as_ref()));
+        self.writer.flush()
     }
 
     /// Get the next message from the IRC server.
     /// Blocks until a message is received.
     pub fn next(&mut self) -> Result<Message, IrcError> {
         let mut line = String::new();
-        try!(self.buf.read_line(&mut line));
+        try!(self.reader.read_line(&mut line));
         Ok(try!(Message::parse(&line)))
     }
 
