@@ -4,11 +4,8 @@ use std::net::{TcpStream, ToSocketAddrs};
 
 use message::{Message, ParseError};
 
-pub struct IrcConnection<'a> {
-    pub username: &'a str,
-    pub realname: &'a str,
-    pub nickname: &'a str,
-    pub password: Option<&'a str>,
+pub struct IrcConnection {
+    pub nickname: String,
     reader: BufReader<TcpStream>,
     writer: BufWriter<TcpStream>,
 }
@@ -28,49 +25,46 @@ impl From<ParseError> for IrcError {
 }
 
 /// Connection
-impl<'a> IrcConnection<'a> {
+impl IrcConnection {
 
-    pub fn new<'b, A: ToSocketAddrs>(addr: A,
-                username: &'b str,
-                realname: &'b str,
-                nickname: &'b str,
-                password: Option<&'b str>) -> io::Result<IrcConnection<'b>> {
+    pub fn new<A: ToSocketAddrs>(addr: A,
+                username: &str,
+                realname: &str,
+                nickname: &str,
+                password: Option<&str>) -> io::Result<IrcConnection> {
         let stream = try!(TcpStream::connect(addr));
 
         let mut con = IrcConnection {
-            username: username,
-            realname: realname,
-            nickname: nickname,
-            password: password,
+            nickname: nickname.into(),
             reader: BufReader::new(try!(stream.try_clone())),
             writer: BufWriter::new(try!(stream.try_clone())),
         };
 
-        try!(con.pass());
-        try!(con.nick());
-        try!(con.user());
+        if let Some(password) = password {
+            try!(con.pass(password));
+        }
+        // TODO nickname failure
+        try!(con.nick(nickname));
+        try!(con.user(username, realname));
 
         Ok(con)
     }
 
     /// USER
-    fn user(&mut self) -> io::Result<()> {
-        let cmd = format!("USER {} 8 * :{}", self.username, self.realname);
+    fn user(&mut self, username: &str, realname: &str) -> io::Result<()> {
+        let cmd = format!("USER {} 8 * :{}", username, realname);
         self.raw(cmd)
     }
 
     /// PASS
-    fn pass(&mut self) -> io::Result<()> {
-        match self.password {
-            Some(password) => self.raw(format!("PASS {}", password)),
-            None => Ok(())
-        }
-
+    fn pass(&mut self, password: &str) -> io::Result<()> {
+        let cmd = format!("PASS {}", password);
+        self.raw(cmd)
     }
 
     /// NICK
-    fn nick(&mut self) -> io::Result<()> {
-        let cmd = format!("NICK {}", self.nickname);
+    fn nick(&mut self, nickname: &str) -> io::Result<()> {
+        let cmd = format!("NICK {}", nickname);
         self.raw(cmd)
     }
 
