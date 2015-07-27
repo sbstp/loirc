@@ -1,112 +1,304 @@
-use std::convert::AsRef;
-use std::io::{self, BufRead, BufReader, BufWriter, Write};
-use std::net::{TcpStream, ToSocketAddrs};
+use std::io::{self, BufRead, BufReader, Write};
+use std::net::{Shutdown, TcpStream, ToSocketAddrs};
+use std::sync::{Arc, Mutex};
+use std::sync::mpsc::{self, Sender, Receiver};
+use std::thread;
 
 use message::{Message, ParseError};
 
-pub struct IrcConnection {
-    pub nickname: String,
-    reader: BufReader<TcpStream>,
-    writer: BufWriter<TcpStream>,
-}
-
+/// This is the comprehensive set of events that can occur.
 #[derive(Debug)]
-pub enum IrcError {
-    IoError(io::Error),
+pub enum Event {
+    /// Connection was manually closed.
+    Closed,
+    /// Connection has dropped.
+    Disconnected,
+    /// Message from the IRC server.
+    Message(Message),
+    /// Error parsing a message from the server.
+    ///
+    /// This can probably be ignored, and it shouldn't ever happen, really.
+    /// If you catch this you should probably open an issue on GitHub.
     ParseError(ParseError),
+    /// Connection was sucessfully restored.
+    Reconnected,
+    /// Attempting to restore connection.
+    Reconnecting,
+    /// An error occured trying to restore the connection.
+    ///
+    /// This is normal in poor network conditions. It might take
+    /// a few attempts before the connection can be restored.
+    /// You might want to implement some kind of heuristic that
+    /// closes the connection after a while.
+    ReconnectionError(io::Error),
 }
 
-impl From<io::Error> for IrcError {
-    fn from(err: io::Error) -> Self { IrcError::IoError(err) }
+/// This the receiving end of a `mpsc` channel.
+///
+/// If is closed/dropped, the connection will also be dropped,
+/// as there isn't anyone listening to the events anymore.
+pub type Reader = Receiver<Event>;
+
+/// Errors produced by the Writer.
+#[derive(Copy, Clone, Debug, Eq, PartialEq)]
+pub enum Error {
+    /// Connection is already closed.
+    AlreadyClosed,
+    /// Connection was manually closed.
+    Closed,
+    /// Connection was dropped.
+    /// A reconnection might be in process.
+    Disconnected,
 }
 
-impl From<ParseError> for IrcError {
-    fn from(err: ParseError) -> Self { IrcError::ParseError(err) }
+enum StreamStatus {
+    // The stream was closed manually.
+    Closed,
+    // The stream is connected.
+    Connected(TcpStream),
+    // The stream is disconnected, an attempt to reconnect will be made.
+    Disconnected,
 }
 
-/// Connection
-impl IrcConnection {
+/// Used to send messages to the IrcServer.
+///
+/// This object is thread safe. You can clone it and send the clones to other
+/// threads. You can write from multiple threads without any issue. Internally,
+/// it uses `Arc` and `Mutex`.
+#[derive(Clone)]
+pub struct Writer {
+    stream: Arc<Mutex<StreamStatus>>,
+}
 
-    pub fn new<A: ToSocketAddrs>(addr: A,
-                username: &str,
-                realname: &str,
-                nickname: &str,
-                password: Option<&str>) -> io::Result<IrcConnection> {
-        let stream = try!(TcpStream::connect(addr));
+impl Writer {
 
-        let mut con = IrcConnection {
-            nickname: nickname.into(),
-            reader: BufReader::new(try!(stream.try_clone())),
-            writer: BufWriter::new(try!(stream.try_clone())),
-        };
-
-        if let Some(password) = password {
-            try!(con.pass(password));
+    fn new(stream: TcpStream) -> Writer {
+        Writer {
+            stream: Arc::new(Mutex::new(StreamStatus::Connected(stream)))
         }
-        // TODO nickname failure
-        try!(con.nick(nickname));
-        try!(con.user(username, realname));
-
-        Ok(con)
     }
 
-    /// USER
-    fn user(&mut self, username: &str, realname: &str) -> io::Result<()> {
-        let cmd = format!("USER {} 8 * :{}", username, realname);
-        self.raw(cmd)
+    fn set_stream(&self, stream: TcpStream) {
+        *self.stream.lock().unwrap() = StreamStatus::Connected(stream);
     }
 
-    /// PASS
-    fn pass(&mut self, password: &str) -> io::Result<()> {
-        let cmd = format!("PASS {}", password);
-        self.raw(cmd)
+    fn disconnect(&self) {
+        *self.stream.lock().unwrap() = StreamStatus::Disconnected;
     }
 
-    /// NICK
-    fn nick(&mut self, nickname: &str) -> io::Result<()> {
-        let cmd = format!("NICK {}", nickname);
-        self.raw(cmd)
+    /// Check if the connection was manually closed.
+    pub fn is_closed(&self) -> bool {
+        match *self.stream.lock().unwrap() {
+            StreamStatus::Closed => true,
+            _ => false,
+        }
     }
 
-    /// JOIN
-    pub fn join<S: AsRef<str>>(&mut self, channels: S, password: Option<S>) -> io::Result<()> {
+    /// Close the connection and stop listening for messages.
+    ///
+    /// There will not be any reconnection attempt.
+    /// An error will be returned if the connection is already closed.
+    #[allow(unused_must_use)]
+    pub fn close(&self) -> Result<(), Error> {
+        let mut status = self.stream.lock().unwrap();
+
+        match *status {
+            StreamStatus::Closed => {
+                return Err(Error::AlreadyClosed);
+            }
+            StreamStatus::Connected(ref mut stream) => {
+                stream.shutdown(Shutdown::Both);
+            }
+            _ => {}
+        }
+
+        *status = StreamStatus::Closed;
+        Ok(())
+    }
+
+    /// Send a raw string to the IRC server.
+    ///
+    /// A new line will be not be added, so make sure that you include it.
+    /// An error will be returned if the client is disconnected.
+    #[allow(unused_must_use)]
+    pub fn raw(&self, data: String) -> Result<(), Error> {
+        let mut status = self.stream.lock().unwrap();
+        let mut failed = false;
+
+        match *status {
+            StreamStatus::Closed => {
+                return Err(Error::Closed);
+            }
+            StreamStatus::Connected(ref mut stream) => {
+                // Try to write to the stream.
+                if stream.write(data.as_bytes()).is_err() {
+                    // The write failed, shutdown the connection.
+                    stream.shutdown(Shutdown::Both);
+                    failed = true;
+                }
+            }
+            StreamStatus::Disconnected => {
+                return Err(Error::Disconnected);
+            }
+        }
+
+        if failed {
+            // The write failed, change the status.
+            *status = StreamStatus::Disconnected;
+            Err(Error::Disconnected)
+        } else {
+            // The write did not fail.
+            Ok(())
+        }
+    }
+
+    /// NICK command.
+    pub fn nick(&self, nickname: &str) -> Result<(), Error> {
+        self.raw(format!("NICK {}\n", nickname))
+    }
+
+    /// USER command.
+    pub fn user(&self, username: &str, realname: &str) -> Result<(), Error> {
+        self.raw(format!("USER {} 8 * :{}\n", username, realname))
+    }
+
+    /// PING command.
+    pub fn ping(&self, server: &str) -> Result<(), Error> {
+        self.raw(format!("PING {}", server))
+    }
+
+    /// PONG command.
+    pub fn pong(&self, server: &str) -> Result<(), Error> {
+        self.raw(format!("PONG {}", server))
+    }
+
+    /// PRIVMSG command.
+    pub fn privmsg(&self, target: &str, text: &str) -> Result<(), Error> {
+        self.raw(format!("PRIVMSG {} :{}", target, text))
+    }
+
+    /// JOIN command.
+    pub fn join(&self, channel: &str, password: Option<&str>) -> Result<(), Error> {
         match password {
-            Some(password) => self.raw(format!("JOIN {} {}", channels.as_ref(), password.as_ref())),
-            None => self.raw(format!("JOIN {}", channels.as_ref())),
+            None => self.raw(format!("JOIN {}", channel)),
+            Some(password) => self.raw(format!("JOIN {} {}", channel, password)),
         }
     }
 
-    /// PART
-    pub fn part<S: AsRef<str>>(&mut self, channels: S, message: Option<S>) -> io::Result<()> {
+    /// PART command.
+    pub fn part(&self, channel: &str, message: Option<&str>) -> Result<(), Error> {
         match message {
-            Some(message) => self.raw(format!("PART {} {}", channels.as_ref(), message.as_ref())),
-            None => self.raw(format!("PART {}", channels.as_ref())),
+            None => self.raw(format!("PART {}", channel)),
+            Some(message) => self.raw(format!("PART {} :{}", channel, message)),
         }
     }
 
-    /// PRIVMSG
-    pub fn privmsg<S: AsRef<str>>(&mut self, target: S, message: S) -> io::Result<()> {
-        self.raw(format!("PRIVMSG {} :{}", target.as_ref(), message.as_ref()))
+}
+
+impl Into<Event> for Result<Message, ParseError> {
+
+    fn into(self) -> Event {
+        match self {
+            Ok(msg) => Event::Message(msg),
+            Err(err) => Event::ParseError(err),
+        }
     }
 
-    /// PONG
-    pub fn pong<S: AsRef<str>>(&mut self, payload: S) -> io::Result<()> {
-        self.raw(format!("PONG :{}", payload.as_ref()))
-    }
+}
 
-    /// Send a raw message to the IRC server.
-    /// Line endings are added by this method.
-    pub fn raw<S: AsRef<str>>(&mut self, raw: S) -> io::Result<()> {
-        try!(write!(self.writer, "{}\r\n", raw.as_ref()));
-        self.writer.flush()
-    }
+fn reconnect<A: ToSocketAddrs>(address: &A, handle: &Writer) -> io::Result<(BufReader<TcpStream>)> {
+    let stream = try!(TcpStream::connect(address));
+    let reader = BufReader::new(try!(stream.try_clone()));
+    handle.set_stream(stream);
+    Ok((reader))
+}
 
-    /// Get the next message from the IRC server.
-    /// Blocks until a message is received.
-    pub fn next(&mut self) -> Result<Message, IrcError> {
+#[allow(unused_must_use)]
+fn reader_thread<A: ToSocketAddrs>(address: A, mut reader: BufReader<TcpStream>, event_sender: Sender<Event>, handle: Writer) {
+    'read: loop {
         let mut line = String::new();
-        try!(self.reader.read_line(&mut line));
-        Ok(try!(Message::parse(&line)))
+        let res = reader.read_line(&mut line);
+
+        // If there's an error or a zero length read, we should check to reconnect or exit.
+        // If the size is 0, it means that the socket was shutdown.
+        if res.is_err() || res.unwrap() == 0 {
+            // If the stream has the closed status, the stream was manually closed.
+            if handle.is_closed() {
+                // Setting stop here is irrelevant, but it removes the compiler warning.
+                event_sender.send(Event::Closed);
+                break;
+            } else {
+                // TODO: reconnection settings (delay, number of attempts)
+                // The stream was not closed manually, attempt to reconnect.
+
+                // Set the disconnected status on the writer.
+                handle.disconnect();
+
+                if event_sender.send(Event::Disconnected).is_err() {
+                    break;
+                }
+
+                // Loop until reconnection is successful.
+                'reconnect: loop {
+
+                    if event_sender.send(Event::Reconnecting).is_err() {
+                        break 'read;
+                    }
+
+                    match reconnect(&address, &handle) {
+                        Ok(new_reader) => {
+                            reader = new_reader;
+                            if event_sender.send(Event::Reconnected).is_err() {
+                                break 'read;
+                            }
+
+                            break 'reconnect;
+                        }
+                        Err(err) => {
+                            if event_sender.send(Event::ReconnectionError(err)).is_err() {
+                                break 'read;
+                            }
+                        }
+                    }
+                    // sleep 60 seconds
+                    thread::sleep_ms(60 * 1000);
+                }
+            }
+        } else {
+            // Size is bigger than 0, try to parse the message. Send the result in the channel.
+            if event_sender.send(Message::parse(&line).into()).is_err() {
+                break;
+            }
+        }
     }
 
+    // If we exited from a break (failed to send message through channel), we might not
+    // have closed the stream cleanly. Do so if necessary.
+    if !handle.is_closed() {
+        handle.close();
+    }
+}
+
+/// Create a connection to the given address.
+///
+/// A `Writer`/`Reader` pair is returned. If the connection fails,
+/// an error is returned.
+pub fn connect<A>(address: A) -> io::Result<(Writer, Reader)>
+        // This is so I can send the address to another thread. A better solution would be nice.
+        where A: ToSocketAddrs + Send + Clone + 'static {
+
+    let stream = try!(TcpStream::connect(address.clone()));
+    let reader = BufReader::new(try!(stream.try_clone()));
+
+    let (event_sender, event_reader) = mpsc::channel::<Event>();
+
+    let writer = Writer::new(stream);
+    // The reader thread needs a handle to modify the status.
+    let reader_handle = writer.clone();
+
+    thread::spawn(move || {
+        reader_thread(address, reader, event_sender, reader_handle);
+    });
+
+    Ok((writer, event_reader))
 }

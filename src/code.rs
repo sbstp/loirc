@@ -4,6 +4,10 @@
 use std::fmt;
 use std::str;
 
+/// This is a representation of IRC message codes.
+///
+/// Is is auto-generated from a Python script.
+/// See the gen/ folder on GitHub.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum Code {
     Pass,
