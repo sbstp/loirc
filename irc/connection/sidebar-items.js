@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["Error","Errors produced by the Writer."],["Event","This is the comprehensive set of events that can occur."]],"fn":[["connect","Create a connection to the given address."]],"struct":[["Writer","Used to send messages to the IrcServer."]],"type":[["Reader","This the receiving end of a `mpsc` channel."]]});
