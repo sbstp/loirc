@@ -74,6 +74,7 @@
 <span id="32">32</span>
 <span id="33">33</span>
 <span id="34">34</span>
+<span id="35">35</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! This library&#39;s goal is to offer a highly available IRC client with an easy to use API.</span>
 <span class='doccomment'>//! Automatic reconnection is built into the design. It uses a channel-like design, where</span>
@@ -84,7 +85,8 @@
 <span class='doccomment'>//! Here&#39;s a canonical example.</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! ```no_run</span>
-<span class='doccomment'>//! let (writer, reader) = irc::connect(&quot;irc.freenode.net:6667&quot;).unwrap();</span>
+<span class='doccomment'>//! // connect to freenode and use the default reconnection settings.</span>
+<span class='doccomment'>//! let (writer, reader) = irc::connect(&quot;irc.freenode.net:6667&quot;, None).unwrap();</span>
 <span class='doccomment'>//! writer.user(&quot;username&quot;, &quot;realname&quot;);</span>
 <span class='doccomment'>//! writer.nick(&quot;nickname&quot;);</span>
 <span class='doccomment'>//! // Block until something happens.</span>
@@ -106,7 +108,7 @@
 <span class='kw'>mod</span> <span class='ident'>connection</span>;
 <span class='kw'>mod</span> <span class='ident'>message</span>;
 
-<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>connection</span>::{<span class='ident'>connect</span>, <span class='ident'>Event</span>, <span class='ident'>Error</span>, <span class='ident'>Reader</span>, <span class='ident'>Writer</span>};
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>connection</span>::{<span class='ident'>connect</span>, <span class='ident'>Event</span>, <span class='ident'>Error</span>, <span class='ident'>Reader</span>, <span class='ident'>ReconnectionSettings</span>, <span class='ident'>Writer</span>};
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>code</span>::<span class='ident'>Code</span>;
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>message</span>::{<span class='ident'>ParseError</span>, <span class='ident'>Message</span>, <span class='ident'>Prefix</span>, <span class='ident'>User</span>};
 </pre>

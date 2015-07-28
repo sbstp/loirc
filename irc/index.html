@@ -45,7 +45,7 @@
             <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                 [<span class='inner'>&#x2212;</span>]
             </a>
-        </span><a id='src-0' class='srclink' href='../src/irc/lib.rs.html#1-34' title='goto source code'>[src]</a></span></h1>
+        </span><a id='src-0' class='srclink' href='../src/irc/lib.rs.html#1-35' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'><p>This library&#39;s goal is to offer a highly available IRC client with an easy to use API.
 Automatic reconnection is built into the design. It uses a channel-like design, where
 events are received from a <code>Reader</code> and commands are sent from one or many <code>Writer</code>.</p>
@@ -54,7 +54,8 @@ events are received from a <code>Reader</code> and commands are sent from one or
 
 <p>Here&#39;s a canonical example.</p>
 <pre class='rust rust-example-rendered'>
-<span class='kw'>let</span> (<span class='ident'>writer</span>, <span class='ident'>reader</span>) <span class='op'>=</span> <span class='ident'>irc</span>::<span class='ident'>connect</span>(<span class='string'>&quot;irc.freenode.net:6667&quot;</span>).<span class='ident'>unwrap</span>();
+<span class='comment'>// connect to freenode and use the default reconnection settings.</span>
+<span class='kw'>let</span> (<span class='ident'>writer</span>, <span class='ident'>reader</span>) <span class='op'>=</span> <span class='ident'>irc</span>::<span class='ident'>connect</span>(<span class='string'>&quot;irc.freenode.net:6667&quot;</span>, <span class='prelude-val'>None</span>).<span class='ident'>unwrap</span>();
 <span class='ident'>writer</span>.<span class='ident'>user</span>(<span class='string'>&quot;username&quot;</span>, <span class='string'>&quot;realname&quot;</span>);
 <span class='ident'>writer</span>.<span class='ident'>nick</span>(<span class='string'>&quot;nickname&quot;</span>);
 <span class='comment'>// Block until something happens.</span>
@@ -141,6 +142,15 @@ events are received from a <code>Reader</code> and commands are sent from one or
                                title='irc::Prefix'>Prefix</a></td>
                         <td class='docblock short'>
                              <p>Prefix of the message.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='enum' href='enum.ReconnectionSettings.html'
+                               title='irc::ReconnectionSettings'>ReconnectionSettings</a></td>
+                        <td class='docblock short'>
+                             <p>These settings tell the reconnection process how to behave.</p>
 
                         </td>
                     </tr>

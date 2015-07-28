@@ -47,7 +47,7 @@
             </a>
         </span><a id='src-6828' class='srclink' href='../src/irc/connection.rs.html#11-34' title='goto source code'>[src]</a></span></h1>
 <pre class='rust enum'>pub enum Event {
-    Closed,
+    Closed(&amp;'static <a href='http://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>),
     Disconnected,
     Message(<a class='struct' href='../irc/struct.Message.html' title='irc::Message'>Message</a>),
     ParseError(<a class='enum' href='../irc/enum.ParseError.html' title='irc::ParseError'>ParseError</a>),
@@ -56,7 +56,7 @@
     ReconnectionError(<a class='struct' href='http://doc.rust-lang.org/nightly/std/io/error/struct.Error.html' title='std::io::error::Error'>Error</a>),
 }</pre><div class='docblock'><p>This is the comprehensive set of events that can occur.</p>
 </div><h2 class='variants'>Variants</h2>
-<table><tr><td id='variant.Closed'><code>Closed</code></td><td><div class='docblock'><p>Connection was manually closed.</p>
+<table><tr><td id='variant.Closed'><code>Closed</code></td><td><div class='docblock'><p>Connection was manually closed. The string is the reason.</p>
 </div></td></tr><tr><td id='variant.Disconnected'><code>Disconnected</code></td><td><div class='docblock'><p>Connection has dropped.</p>
 </div></td></tr><tr><td id='variant.Message'><code>Message</code></td><td><div class='docblock'><p>Message from the IRC server.</p>
 </div></td></tr><tr><td id='variant.ParseError'><code>ParseError</code></td><td><div class='docblock'><p>Error parsing a message from the server.</p>
