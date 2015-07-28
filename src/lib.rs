@@ -7,7 +7,8 @@
 //! Here's a canonical example.
 //!
 //! ```no_run
-//! let (writer, reader) = irc::connect("irc.freenode.net:6667").unwrap();
+//! // connect to freenode and use the default reconnection settings.
+//! let (writer, reader) = irc::connect("irc.freenode.net:6667", None).unwrap();
 //! writer.user("username", "realname");
 //! writer.nick("nickname");
 //! // Block until something happens.
@@ -29,6 +30,6 @@ mod code;
 mod connection;
 mod message;
 
-pub use connection::{connect, Event, Error, Reader, Writer};
+pub use connection::{connect, Event, Error, Reader, ReconnectionSettings, Writer};
 pub use code::Code;
 pub use message::{ParseError, Message, Prefix, User};
