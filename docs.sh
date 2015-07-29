@@ -1,18 +1,27 @@
 #!/bin/bash
 # Simple script to push the docs.
 
-set -ex
-
+REPO="git@github.com:celavy/irc.git"
 TMPDIR="/tmp/rust-docs-$$"
 
+echo "REPO: $REPO"
+echo "TMPDIR: $TMPDIR"
+
 mkdir $TMPDIR
-cargo doc
-cp -R ./target/doc/* $TMPDIR
-git checkout gh-pages
-rm -rf ./*
-cp -R $TMPDIR/* ./
-git add -A
-git commit -m 'Update docs'
-git push origin gh-pages
+cd $TMPDIR
+
+git clone $REPO repo
+mkdir docs
+
+cd repo
+if cargo doc ; then
+    cp -R target/doc/* ../docs
+    git checkout gh-pages
+    rm -rf *
+    cp -R ../docs/* ./
+    git add -A
+    git commit -m 'Update docs'
+    git push origin gh-pages
+fi
+
 rm -rf $TMPDIR
-git checkout master
