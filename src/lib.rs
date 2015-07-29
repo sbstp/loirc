@@ -25,10 +25,12 @@
 //!     }
 //! }
 //! ```
+extern crate time;
 
 mod code;
 mod connection;
 mod message;
+pub mod util;
 
 pub use connection::{connect, Event, Error, Reader, ReconnectionSettings, Writer};
 pub use code::Code;
