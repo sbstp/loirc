@@ -247,9 +247,11 @@ pub enum ReconnectionSettings {
         /// Wait time between two attempts to reconnect in milliseconds.
         ///
         /// Note that if the computer's network is still unavailable, the connect
-        /// call will block for about a minute until it fails. It's currently
-        /// impossible to set a connect timeout on the TcpStream. Consider this
-        /// when choosing a value.
+        /// call might block for about a minute until it fails. Somtimes, it fails
+        /// instantly because it cannot resolve the hostname. You should probably
+        /// leave at least a second of delay, so that it doesn't loop really fast
+        /// while getting hostname resolution errors. You can watch the stream of
+        /// errors via the ReconnectionError event.
         delay_between_attempts: u32,
         /// Wait time after disconnection, before trying to reconnect.
         delay_after_disconnect: u32,
