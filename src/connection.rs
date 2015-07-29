@@ -44,9 +44,12 @@ pub type Reader = Receiver<Event>;
 pub enum Error {
     /// Connection is already closed.
     AlreadyClosed,
+    /// Connection is already disconnected.
+    AlreadyDisconnected,
     /// Connection was manually closed.
     Closed,
     /// Connection was dropped.
+    ///
     /// A reconnection might be in process.
     Disconnected,
 }
@@ -78,12 +81,37 @@ impl Writer {
         }
     }
 
-    fn set_stream(&self, stream: TcpStream) {
+    fn set_connected(&self, stream: TcpStream) {
         *self.stream.lock().unwrap() = StreamStatus::Connected(stream);
     }
 
-    fn disconnect(&self) {
+    fn set_disconnected(&self) {
         *self.stream.lock().unwrap() = StreamStatus::Disconnected;
+    }
+
+    /// Drop the connection and trigger the reconnection process.
+    ///
+    /// There might be a reconnection attempt, based on your settings.
+    /// This should be used if you want the connection to be re-created.
+    /// This is not the preferred way of shutting down the connection
+    /// for good. Use `close` for this.
+    pub fn disconnect(&self) -> Result<(), Error> {
+        let mut status = self.stream.lock().unwrap();
+
+        match *status {
+            StreamStatus::Closed => {
+                return Err(Error::Closed);
+            }
+            StreamStatus::Connected(ref mut stream) => {
+                let _ = stream.shutdown(Shutdown::Both);
+            }
+            StreamStatus::Disconnected => {
+                return Err(Error::AlreadyDisconnected);
+            }
+        }
+
+        *status = StreamStatus::Disconnected;
+        Ok(())
     }
 
     /// Check if the connection was manually closed.
@@ -260,7 +288,7 @@ impl Into<ReconnectionSettings> for Option<ReconnectionSettings> {
 fn reconnect<A: ToSocketAddrs>(address: &A, handle: &Writer) -> io::Result<(BufReader<TcpStream>)> {
     let stream = try!(TcpStream::connect(address));
     let reader = BufReader::new(try!(stream.try_clone()));
-    handle.set_stream(stream);
+    handle.set_connected(stream);
     Ok((reader))
 }
 
@@ -282,7 +310,7 @@ fn reader_thread<A: ToSocketAddrs>(address: A, mut reader: BufReader<TcpStream>,
                 // The stream was not closed manually, see what we should do.
 
                 // Set the disconnected status on the writer.
-                handle.disconnect();
+                handle.set_disconnected();
 
                 if event_sender.send(Event::Disconnected).is_err() {
                     break;
