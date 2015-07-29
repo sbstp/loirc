@@ -45,7 +45,7 @@
             <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                 [<span class='inner'>&#x2212;</span>]
             </a>
-        </span><a id='src-8007' class='srclink' href='../src/irc/connection.rs.html#238-257' title='goto source code'>[src]</a></span></h1>
+        </span><a id='src-8007' class='srclink' href='../src/irc/connection.rs.html#238-259' title='goto source code'>[src]</a></span></h1>
 <pre class='rust enum'>pub enum ReconnectionSettings {
     DoNotReconnect,
     Reconnect {
@@ -68,9 +68,11 @@ See the Default trait implementation.</p>
 </div></td></tr><tr><td id='variant.Reconnect.field.delay_between_attempts'><code>delay_between_attempts</code></td><td><div class='docblock'><p>Wait time between two attempts to reconnect in milliseconds.</p>
 
 <p>Note that if the computer&#39;s network is still unavailable, the connect
-call will block for about a minute until it fails. It&#39;s currently
-impossible to set a connect timeout on the TcpStream. Consider this
-when choosing a value.</p>
+call might block for about a minute until it fails. Somtimes, it fails
+instantly because it cannot resolve the hostname. You should probably
+leave at least a second of delay, so that it doesn&#39;t loop really fast
+while getting hostname resolution errors. You can watch the stream of
+errors via the ReconnectionError event.</p>
 </div></td></tr><tr><td id='variant.Reconnect.field.delay_after_disconnect'><code>delay_after_disconnect</code></td><td><div class='docblock'><p>Wait time after disconnection, before trying to reconnect.</p>
 </div></td></tr></table></td></tr></table><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><code>impl <a class='trait' href='http://doc.rust-lang.org/nightly/core/default/trait.Default.html' title='core::default::Default'>Default</a> for <a class='enum' href='../irc/enum.ReconnectionSettings.html' title='irc::ReconnectionSettings'>ReconnectionSettings</a></code></h3><div class='docblock'><p>Default settings are provided for this enum.</p>
 

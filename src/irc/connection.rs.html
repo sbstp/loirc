@@ -457,6 +457,8 @@
 <span id="415">415</span>
 <span id="416">416</span>
 <span id="417">417</span>
+<span id="418">418</span>
+<span id="419">419</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>io</span>::{<span class='self'>self</span>, <span class='ident'>BufRead</span>, <span class='ident'>BufReader</span>, <span class='ident'>Write</span>};
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>net</span>::{<span class='ident'>Shutdown</span>, <span class='ident'>TcpStream</span>, <span class='ident'>ToSocketAddrs</span>};
@@ -707,9 +709,11 @@
         <span class='doccomment'>/// Wait time between two attempts to reconnect in milliseconds.</span>
         <span class='doccomment'>///</span>
         <span class='doccomment'>/// Note that if the computer&#39;s network is still unavailable, the connect</span>
-        <span class='doccomment'>/// call will block for about a minute until it fails. It&#39;s currently</span>
-        <span class='doccomment'>/// impossible to set a connect timeout on the TcpStream. Consider this</span>
-        <span class='doccomment'>/// when choosing a value.</span>
+        <span class='doccomment'>/// call might block for about a minute until it fails. Somtimes, it fails</span>
+        <span class='doccomment'>/// instantly because it cannot resolve the hostname. You should probably</span>
+        <span class='doccomment'>/// leave at least a second of delay, so that it doesn&#39;t loop really fast</span>
+        <span class='doccomment'>/// while getting hostname resolution errors. You can watch the stream of</span>
+        <span class='doccomment'>/// errors via the ReconnectionError event.</span>
         <span class='ident'>delay_between_attempts</span>: <span class='ident'>u32</span>,
         <span class='doccomment'>/// Wait time after disconnection, before trying to reconnect.</span>
         <span class='ident'>delay_after_disconnect</span>: <span class='ident'>u32</span>,
