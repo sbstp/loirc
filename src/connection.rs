@@ -272,7 +272,7 @@ impl Default for ReconnectionSettings {
     fn default() -> ReconnectionSettings {
         ReconnectionSettings::Reconnect {
             max_attempts: 10,
-            delay_between_attempts: 5,
+            delay_between_attempts: 5 * 1000,
             delay_after_disconnect: 60 * 1000,
         }
     }
