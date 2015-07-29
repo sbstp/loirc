@@ -45,7 +45,7 @@
             <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                 [<span class='inner'>&#x2212;</span>]
             </a>
-        </span><a id='src-7224' class='srclink' href='../src/irc/connection.rs.html#69-71' title='goto source code'>[src]</a></span></h1>
+        </span><a id='src-7253' class='srclink' href='../src/irc/connection.rs.html#72-74' title='goto source code'>[src]</a></span></h1>
 <pre class='rust struct'>pub struct Writer {
     // some fields omitted
 }</pre><div class='docblock'><p>Used to send messages to the IrcServer.</p>
@@ -53,7 +53,14 @@
 <p>This object is thread safe. You can clone it and send the clones to other
 threads. You can write from multiple threads without any issue. Internally,
 it uses <code>Arc</code> and <code>Mutex</code>.</p>
-</div><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../irc/struct.Writer.html' title='irc::Writer'>Writer</a></code></h3><div class='impl-items'><h4 id='method.is_closed' class='method'><code>fn <a href='#method.is_closed' class='fnname'>is_closed</a>(&amp;self) -&gt; <a href='http://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../irc/struct.Writer.html' title='irc::Writer'>Writer</a></code></h3><div class='impl-items'><h4 id='method.disconnect' class='method'><code>fn <a href='#method.disconnect' class='fnname'>disconnect</a>(&amp;self) -&gt; <a class='enum' href='http://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a href='http://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>, <a class='enum' href='../irc/enum.Error.html' title='irc::Error'>Error</a>&gt;</code></h4>
+<div class='docblock'><p>Drop the connection and trigger the reconnection process.</p>
+
+<p>There might be a reconnection attempt, based on your settings.
+This should be used if you want the connection to be re-created.
+This is not the preferred way of shutting down the connection
+for good. Use <code>close</code> for this.</p>
+</div><h4 id='method.is_closed' class='method'><code>fn <a href='#method.is_closed' class='fnname'>is_closed</a>(&amp;self) -&gt; <a href='http://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
 <div class='docblock'><p>Check if the connection was manually closed.</p>
 </div><h4 id='method.close' class='method'><code>fn <a href='#method.close' class='fnname'>close</a>(&amp;self) -&gt; <a class='enum' href='http://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a href='http://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>, <a class='enum' href='../irc/enum.Error.html' title='irc::Error'>Error</a>&gt;</code></h4>
 <div class='docblock'><p>Close the connection and stop listening for messages.</p>
