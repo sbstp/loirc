@@ -28,8 +28,6 @@ pub enum Event {
     ///
     /// This is normal in poor network conditions. It might take
     /// a few attempts before the connection can be restored.
-    /// You might want to implement some kind of heuristic that
-    /// closes the connection after a while.
     ReconnectionError(io::Error),
 }
 
@@ -247,6 +245,11 @@ pub enum ReconnectionSettings {
         /// A value of 0 means infinite attempts.
         max_attempts: u32,
         /// Wait time between two attempts to reconnect in milliseconds.
+        ///
+        /// Note that if the computer's network is still unavailable, the connect
+        /// call will block for about a minute until it fails. It's currently
+        /// impossible to set a connect timeout on the TcpStream. Consider this
+        /// when choosing a value.
         delay_between_attempts: u32,
         /// Wait time after disconnection, before trying to reconnect.
         delay_after_disconnect: u32,
@@ -259,7 +262,7 @@ pub enum ReconnectionSettings {
 ///
 /// `max_attempts` = 10
 ///
-/// `delay_between_attempts` = 60 seconds
+/// `delay_between_attempts` = 5 seconds
 ///
 /// `delay_after_disconnect` = 60 seconds
 impl Default for ReconnectionSettings {
@@ -267,7 +270,7 @@ impl Default for ReconnectionSettings {
     fn default() -> ReconnectionSettings {
         ReconnectionSettings::Reconnect {
             max_attempts: 10,
-            delay_between_attempts: 60 * 1000,
+            delay_between_attempts: 5,
             delay_after_disconnect: 60 * 1000,
         }
     }
