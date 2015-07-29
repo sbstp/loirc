@@ -45,7 +45,7 @@
             <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                 [<span class='inner'>&#x2212;</span>]
             </a>
-        </span><a id='src-8007' class='srclink' href='../src/irc/connection.rs.html#240-254' title='goto source code'>[src]</a></span></h1>
+        </span><a id='src-8007' class='srclink' href='../src/irc/connection.rs.html#238-257' title='goto source code'>[src]</a></span></h1>
 <pre class='rust enum'>pub enum ReconnectionSettings {
     DoNotReconnect,
     Reconnect {
@@ -66,6 +66,11 @@ See the Default trait implementation.</p>
 
 <p>A value of 0 means infinite attempts.</p>
 </div></td></tr><tr><td id='variant.Reconnect.field.delay_between_attempts'><code>delay_between_attempts</code></td><td><div class='docblock'><p>Wait time between two attempts to reconnect in milliseconds.</p>
+
+<p>Not that if the computer&#39;s network is still unavailable, the connect
+call will block for about a minute until it fails. It&#39;s currently
+impossible to set a connect timeout on the TcpStream. Consider this
+when choosing a value.</p>
 </div></td></tr><tr><td id='variant.Reconnect.field.delay_after_disconnect'><code>delay_after_disconnect</code></td><td><div class='docblock'><p>Wait time after disconnection, before trying to reconnect.</p>
 </div></td></tr></table></td></tr></table><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><code>impl <a class='trait' href='http://doc.rust-lang.org/nightly/core/default/trait.Default.html' title='core::default::Default'>Default</a> for <a class='enum' href='../irc/enum.ReconnectionSettings.html' title='irc::ReconnectionSettings'>ReconnectionSettings</a></code></h3><div class='docblock'><p>Default settings are provided for this enum.</p>
 
@@ -73,7 +78,7 @@ See the Default trait implementation.</p>
 
 <p><code>max_attempts</code> = 10</p>
 
-<p><code>delay_between_attempts</code> = 60 seconds</p>
+<p><code>delay_between_attempts</code> = 5 seconds</p>
 
 <p><code>delay_after_disconnect</code> = 60 seconds</p>
 </div><div class='impl-items'><h4 id='method.default' class='method'><code>fn <a href='http://doc.rust-lang.org/nightly/core/default/trait.Default.html#method.default' class='fnname'>default</a>() -&gt; <a class='enum' href='../irc/enum.ReconnectionSettings.html' title='irc::ReconnectionSettings'>ReconnectionSettings</a></code></h4>

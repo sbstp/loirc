@@ -454,6 +454,9 @@
 <span id="412">412</span>
 <span id="413">413</span>
 <span id="414">414</span>
+<span id="415">415</span>
+<span id="416">416</span>
+<span id="417">417</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>io</span>::{<span class='self'>self</span>, <span class='ident'>BufRead</span>, <span class='ident'>BufReader</span>, <span class='ident'>Write</span>};
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>net</span>::{<span class='ident'>Shutdown</span>, <span class='ident'>TcpStream</span>, <span class='ident'>ToSocketAddrs</span>};
@@ -485,8 +488,6 @@
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// This is normal in poor network conditions. It might take</span>
     <span class='doccomment'>/// a few attempts before the connection can be restored.</span>
-    <span class='doccomment'>/// You might want to implement some kind of heuristic that</span>
-    <span class='doccomment'>/// closes the connection after a while.</span>
     <span class='ident'>ReconnectionError</span>(<span class='ident'>io</span>::<span class='ident'>Error</span>),
 }
 
@@ -704,6 +705,11 @@
         <span class='doccomment'>/// A value of 0 means infinite attempts.</span>
         <span class='ident'>max_attempts</span>: <span class='ident'>u32</span>,
         <span class='doccomment'>/// Wait time between two attempts to reconnect in milliseconds.</span>
+        <span class='doccomment'>///</span>
+        <span class='doccomment'>/// Not that if the computer&#39;s network is still unavailable, the connect</span>
+        <span class='doccomment'>/// call will block for about a minute until it fails. It&#39;s currently</span>
+        <span class='doccomment'>/// impossible to set a connect timeout on the TcpStream. Consider this</span>
+        <span class='doccomment'>/// when choosing a value.</span>
         <span class='ident'>delay_between_attempts</span>: <span class='ident'>u32</span>,
         <span class='doccomment'>/// Wait time after disconnection, before trying to reconnect.</span>
         <span class='ident'>delay_after_disconnect</span>: <span class='ident'>u32</span>,
@@ -716,7 +722,7 @@
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// `max_attempts` = 10</span>
 <span class='doccomment'>///</span>
-<span class='doccomment'>/// `delay_between_attempts` = 60 seconds</span>
+<span class='doccomment'>/// `delay_between_attempts` = 5 seconds</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// `delay_after_disconnect` = 60 seconds</span>
 <span class='kw'>impl</span> <span class='ident'>Default</span> <span class='kw'>for</span> <span class='ident'>ReconnectionSettings</span> {
@@ -724,7 +730,7 @@
     <span class='kw'>fn</span> <span class='ident'>default</span>() <span class='op'>-&gt;</span> <span class='ident'>ReconnectionSettings</span> {
         <span class='ident'>ReconnectionSettings</span>::<span class='ident'>Reconnect</span> {
             <span class='ident'>max_attempts</span>: <span class='number'>10</span>,
-            <span class='ident'>delay_between_attempts</span>: <span class='number'>60</span> <span class='op'>*</span> <span class='number'>1000</span>,
+            <span class='ident'>delay_between_attempts</span>: <span class='number'>5</span>,
             <span class='ident'>delay_after_disconnect</span>: <span class='number'>60</span> <span class='op'>*</span> <span class='number'>1000</span>,
         }
     }
