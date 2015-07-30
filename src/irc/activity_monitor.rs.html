@@ -4,10 +4,10 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `src/util.rs`.">
+    <meta name="description" content="Source to the Rust file `src/activity_monitor.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
-    <title>util.rs.html -- source</title>
+    <title>activity_monitor.rs.html -- source</title>
 
     <link rel="stylesheet" type="text/css" href="../../main.css">
 
@@ -238,6 +238,85 @@
 <span id="196">196</span>
 <span id="197">197</span>
 <span id="198">198</span>
+<span id="199">199</span>
+<span id="200">200</span>
+<span id="201">201</span>
+<span id="202">202</span>
+<span id="203">203</span>
+<span id="204">204</span>
+<span id="205">205</span>
+<span id="206">206</span>
+<span id="207">207</span>
+<span id="208">208</span>
+<span id="209">209</span>
+<span id="210">210</span>
+<span id="211">211</span>
+<span id="212">212</span>
+<span id="213">213</span>
+<span id="214">214</span>
+<span id="215">215</span>
+<span id="216">216</span>
+<span id="217">217</span>
+<span id="218">218</span>
+<span id="219">219</span>
+<span id="220">220</span>
+<span id="221">221</span>
+<span id="222">222</span>
+<span id="223">223</span>
+<span id="224">224</span>
+<span id="225">225</span>
+<span id="226">226</span>
+<span id="227">227</span>
+<span id="228">228</span>
+<span id="229">229</span>
+<span id="230">230</span>
+<span id="231">231</span>
+<span id="232">232</span>
+<span id="233">233</span>
+<span id="234">234</span>
+<span id="235">235</span>
+<span id="236">236</span>
+<span id="237">237</span>
+<span id="238">238</span>
+<span id="239">239</span>
+<span id="240">240</span>
+<span id="241">241</span>
+<span id="242">242</span>
+<span id="243">243</span>
+<span id="244">244</span>
+<span id="245">245</span>
+<span id="246">246</span>
+<span id="247">247</span>
+<span id="248">248</span>
+<span id="249">249</span>
+<span id="250">250</span>
+<span id="251">251</span>
+<span id="252">252</span>
+<span id="253">253</span>
+<span id="254">254</span>
+<span id="255">255</span>
+<span id="256">256</span>
+<span id="257">257</span>
+<span id="258">258</span>
+<span id="259">259</span>
+<span id="260">260</span>
+<span id="261">261</span>
+<span id="262">262</span>
+<span id="263">263</span>
+<span id="264">264</span>
+<span id="265">265</span>
+<span id="266">266</span>
+<span id="267">267</span>
+<span id="268">268</span>
+<span id="269">269</span>
+<span id="270">270</span>
+<span id="271">271</span>
+<span id="272">272</span>
+<span id="273">273</span>
+<span id="274">274</span>
+<span id="275">275</span>
+<span id="276">276</span>
+<span id="277">277</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>thread</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>sync</span>::{<span class='ident'>Arc</span>, <span class='ident'>Mutex</span>, <span class='ident'>MutexGuard</span>};
@@ -328,7 +407,7 @@
 
 }
 
-<span class='kw'>fn</span> <span class='ident'>periodic_checker</span>(<span class='ident'>state</span>: <span class='ident'>State</span>, <span class='ident'>handle</span>: <span class='ident'>Writer</span>) {
+<span class='kw'>fn</span> <span class='ident'>periodic_checker</span>(<span class='ident'>state</span>: <span class='ident'>State</span>, <span class='ident'>handle</span>: <span class='ident'>Writer</span>, <span class='ident'>settings</span>: <span class='ident'>MonitorSettings</span>) {
     <span class='kw'>loop</span> {
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>conn_status</span> <span class='op'>=</span> <span class='ident'>state</span>.<span class='ident'>connection_status</span>();
 
@@ -342,7 +421,7 @@
                     <span class='comment'>// to ping mode.</span>
                     <span class='ident'>MonitorStatus</span>::<span class='ident'>Activity</span>(<span class='ident'>activity_ts</span>) <span class='op'>=&gt;</span> {
                         <span class='kw'>let</span> <span class='ident'>diff</span> <span class='op'>=</span> <span class='ident'>time</span>::<span class='ident'>get_time</span>() <span class='op'>-</span> <span class='ident'>activity_ts</span>;
-                        <span class='kw'>if</span> <span class='ident'>diff</span> <span class='op'>&gt;</span> <span class='ident'>Duration</span>::<span class='ident'>seconds</span>(<span class='number'>10</span>) {
+                        <span class='kw'>if</span> <span class='ident'>diff</span> <span class='op'>&gt;</span> <span class='ident'>settings</span>.<span class='ident'>activity_timeout</span> {
                             <span class='macro'>println</span><span class='macro'>!</span>(<span class='string'>&quot;sending a ping&quot;</span>);
                             <span class='comment'>// Make sure we have a server name.</span>
                             <span class='kw'>match</span> <span class='op'>*</span><span class='ident'>state</span>.<span class='ident'>get_server</span>() {
@@ -367,7 +446,7 @@
                     <span class='ident'>MonitorStatus</span>::<span class='ident'>Ping</span>(<span class='ident'>ping_ts</span>) <span class='op'>=&gt;</span> {
                         <span class='kw'>let</span> <span class='ident'>diff</span> <span class='op'>=</span> <span class='ident'>time</span>::<span class='ident'>get_time</span>() <span class='op'>-</span> <span class='ident'>ping_ts</span>;
                         <span class='macro'>println</span><span class='macro'>!</span>(<span class='string'>&quot;checking {}&quot;</span>, <span class='ident'>diff</span>);
-                        <span class='kw'>if</span> <span class='ident'>diff</span> <span class='op'>&gt;</span> <span class='ident'>Duration</span>::<span class='ident'>seconds</span>(<span class='number'>5</span>) {
+                        <span class='kw'>if</span> <span class='ident'>diff</span> <span class='op'>&gt;</span> <span class='ident'>settings</span>.<span class='ident'>ping_timeout</span> {
                             <span class='macro'>println</span><span class='macro'>!</span>(<span class='string'>&quot;no ping reply&quot;</span>);
                             <span class='comment'>// trigger reconnection process</span>
                             <span class='kw'>let</span> _ <span class='op'>=</span> <span class='ident'>handle</span>.<span class='ident'>disconnect</span>();
@@ -386,20 +465,82 @@
     }
 }
 
+<span class='doccomment'>/// These settings tell the monitor how to behave.</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// They allow you to configure the amount of time between the steps.</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Copy</span>, <span class='ident'>Clone</span>)]</span>
+<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>MonitorSettings</span> {
+    <span class='doccomment'>/// Amount of time since the last activity.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// When the amount of time since the last activity gets higher than this value,</span>
+    <span class='doccomment'>/// tt will trigger a ping request. If there is not a lot of activity, this means</span>
+    <span class='doccomment'>/// that the server will be pinged everytime this duration expires.</span>
+    <span class='kw'>pub</span> <span class='ident'>activity_timeout</span>: <span class='ident'>Duration</span>,
+    <span class='doccomment'>/// Amount of time to wait for a ping reply.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// When the amount of time since the ping was sent gets higher than this value,</span>
+    <span class='doccomment'>/// and that no activity occured, assume the connection was dropped and trigger</span>
+    <span class='doccomment'>/// and a disconnect.</span>
+    <span class='kw'>pub</span> <span class='ident'>ping_timeout</span>: <span class='ident'>Duration</span>,
+}
+
+<span class='doccomment'>/// Default values are provided for the settings.</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// They are:</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// `activity_timeout` = 60 seconds</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// `ping_timeout` = 15 seconds</span>
+<span class='kw'>impl</span> <span class='ident'>Default</span> <span class='kw'>for</span> <span class='ident'>MonitorSettings</span> {
+
+    <span class='kw'>fn</span> <span class='ident'>default</span>() <span class='op'>-&gt;</span> <span class='ident'>MonitorSettings</span> {
+        <span class='ident'>MonitorSettings</span> {
+            <span class='ident'>activity_timeout</span>: <span class='ident'>Duration</span>::<span class='ident'>seconds</span>(<span class='number'>60</span>),
+            <span class='ident'>ping_timeout</span>: <span class='ident'>Duration</span>::<span class='ident'>seconds</span>(<span class='number'>15</span>),
+        }
+    }
+
+}
+
+<span class='kw'>impl</span> <span class='ident'>Into</span><span class='op'>&lt;</span><span class='ident'>MonitorSettings</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>MonitorSettings</span><span class='op'>&gt;</span> {
+
+    <span class='kw'>fn</span> <span class='ident'>into</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>MonitorSettings</span> {
+        <span class='kw'>match</span> <span class='self'>self</span> {
+            <span class='prelude-val'>Some</span>(<span class='ident'>s</span>) <span class='op'>=&gt;</span> <span class='ident'>s</span>,
+            <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='ident'>Default</span>::<span class='ident'>default</span>(),
+        }
+    }
+
+}
+
+<span class='doccomment'>/// This struct monitors a connection&#39;s activity.</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// It works in a few simple, steps.</span>
+<span class='doccomment'>/// First, it monitors activity via the feed method, saving a timestamp for relevant events.</span>
+<span class='doccomment'>/// If no activity is detected over the given period of time, it will send a ping request to</span>
+<span class='doccomment'>/// the IRC server. If no ping  reply is received, it will trigger a disconnect which may lead</span>
+<span class='doccomment'>/// to reconnection depending on the reconnection settings.</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// The amount of time to wait, without activity, before sending a ping request, and the amount</span>
+<span class='doccomment'>/// of time to wait for the ping reply can be configured via the `MonitorSettings` struct.</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>ActivityMonitor</span> {
     <span class='ident'>state</span>: <span class='ident'>State</span>,
 }
 
 <span class='kw'>impl</span> <span class='ident'>ActivityMonitor</span> {
 
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>handle</span>: <span class='kw-2'>&amp;</span><span class='ident'>Writer</span>) <span class='op'>-&gt;</span> <span class='ident'>ActivityMonitor</span> {
+    <span class='doccomment'>/// Create a new ActivityMonitor.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// The handle to a Writer allows the monitor to notify the connection of disconnects.</span>
+    <span class='doccomment'>/// If no settings are given, the default settings are used.</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>handle</span>: <span class='kw-2'>&amp;</span><span class='ident'>Writer</span>, <span class='ident'>settings</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>MonitorSettings</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>ActivityMonitor</span> {
         <span class='kw'>let</span> <span class='ident'>state</span> <span class='op'>=</span>  <span class='ident'>State</span>::<span class='ident'>new</span>(<span class='ident'>time</span>::<span class='ident'>get_time</span>());
 
         <span class='kw'>let</span> <span class='ident'>state_clone</span> <span class='op'>=</span> <span class='ident'>state</span>.<span class='ident'>clone</span>();
         <span class='kw'>let</span> <span class='ident'>handle_clone</span> <span class='op'>=</span> <span class='ident'>handle</span>.<span class='ident'>clone</span>();
 
         <span class='ident'>thread</span>::<span class='ident'>spawn</span>(<span class='kw'>move</span> <span class='op'>||</span> {
-            <span class='ident'>periodic_checker</span>(<span class='ident'>state_clone</span>, <span class='ident'>handle_clone</span>);
+            <span class='ident'>periodic_checker</span>(<span class='ident'>state_clone</span>, <span class='ident'>handle_clone</span>, <span class='ident'>settings</span>.<span class='ident'>into</span>());
         });
 
         <span class='ident'>ActivityMonitor</span> {
@@ -407,6 +548,10 @@
         }
     }
 
+    <span class='doccomment'>/// Give an event received from the connection to the monitor.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// The monitor will process it accordingly. It an Event::Closed event</span>
+    <span class='doccomment'>/// is received, it will shutdown all of its activities.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>feed</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>event</span>: <span class='kw-2'>&amp;</span><span class='ident'>Event</span>) {
         <span class='kw'>match</span> <span class='op'>*</span><span class='ident'>event</span> {
             <span class='ident'>Event</span>::<span class='ident'>Closed</span>(_) <span class='op'>=&gt;</span> {
@@ -432,8 +577,21 @@
                     }
                 }
             }
+            <span class='comment'>// Other events are irrelevant.</span>
             _ <span class='op'>=&gt;</span> {}
         }
+    }
+
+}
+
+<span class='doccomment'>/// Drop stops the background thread and clears the monitor&#39;s resources.</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// If you can the activity monitor to cease its activites, you can simply drop it.</span>
+<span class='doccomment'>/// It will not affect the connection on which the activity monitor operates.</span>
+<span class='kw'>impl</span> <span class='ident'>Drop</span> <span class='kw'>for</span> <span class='ident'>ActivityMonitor</span> {
+
+    <span class='kw'>fn</span> <span class='ident'>drop</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) {
+        <span class='self'>self</span>.<span class='ident'>state</span>.<span class='ident'>quit</span>();
     }
 
 }

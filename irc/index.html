@@ -45,7 +45,7 @@
             <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                 [<span class='inner'>&#x2212;</span>]
             </a>
-        </span><a id='src-0' class='srclink' href='../src/irc/lib.rs.html#1-39' title='goto source code'>[src]</a></span></h1>
+        </span><a id='src-0' class='srclink' href='../src/irc/lib.rs.html#1-40' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'><p>This library&#39;s goal is to offer a highly available IRC client with an easy to use API.
 Automatic reconnection is built into the design. It uses a channel-like design, where
 events are received from a <code>Reader</code> and commands are sent from one or many <code>Writer</code>.</p>
@@ -71,17 +71,17 @@ events are received from a <code>Reader</code> and commands are sent from one or
         _ <span class='op'>=&gt;</span> {}
     }
 }</pre>
-</div><h2 id='modules' class='section-header'><a href="#modules">Modules</a></h2>
+</div><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
 <table>
                     <tr class=' module-item'>
-                        <td><a class='mod' href='util/index.html'
-                               title='irc::util'>util</a></td>
+                        <td><a class='struct' href='struct.ActivityMonitor.html'
+                               title='irc::ActivityMonitor'>ActivityMonitor</a></td>
                         <td class='docblock short'>
-                             
+                             <p>This struct monitors a connection&#39;s activity.</p>
+
                         </td>
                     </tr>
-                </table><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
-<table>
+                
                     <tr class=' module-item'>
                         <td><a class='struct' href='struct.Duration.html'
                                title='irc::Duration'>Duration</a></td>
@@ -97,6 +97,15 @@ This also allows for the negative duration; see individual methods for details.<
                                title='irc::Message'>Message</a></td>
                         <td class='docblock short'>
                              <p>Represents a message received from the server.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.MonitorSettings.html'
+                               title='irc::MonitorSettings'>MonitorSettings</a></td>
+                        <td class='docblock short'>
+                             <p>These settings tell the monitor how to behave.</p>
 
                         </td>
                     </tr>

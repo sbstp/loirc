@@ -79,6 +79,7 @@
 <span id="37">37</span>
 <span id="38">38</span>
 <span id="39">39</span>
+<span id="40">40</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! This library&#39;s goal is to offer a highly available IRC client with an easy to use API.</span>
 <span class='doccomment'>//! Automatic reconnection is built into the design. It uses a channel-like design, where</span>
@@ -109,13 +110,14 @@
 <span class='doccomment'>//! ```</span>
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>time</span>;
 
+<span class='kw'>mod</span> <span class='ident'>activity_monitor</span>;
 <span class='kw'>mod</span> <span class='ident'>code</span>;
 <span class='kw'>mod</span> <span class='ident'>connection</span>;
 <span class='kw'>mod</span> <span class='ident'>message</span>;
-<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>util</span>;
 
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>time</span>::<span class='ident'>Duration</span>;
 
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>activity_monitor</span>::{<span class='ident'>ActivityMonitor</span>, <span class='ident'>MonitorSettings</span>};
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>connection</span>::{<span class='ident'>connect</span>, <span class='ident'>Event</span>, <span class='ident'>Error</span>, <span class='ident'>Reader</span>, <span class='ident'>ReconnectionSettings</span>, <span class='ident'>Writer</span>};
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>code</span>::<span class='ident'>Code</span>;
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>message</span>::{<span class='ident'>ParseError</span>, <span class='ident'>Message</span>, <span class='ident'>Prefix</span>, <span class='ident'>User</span>};
