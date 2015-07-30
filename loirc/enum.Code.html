@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `Code` enum in crate `loirc`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, Code">
+
+    <title>loirc::Code - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <section class="sidebar">
+        
+        <p class='location'><a href='index.html'>loirc</a></p><script>window.sidebarCurrent = {name: 'Code', ty: 'enum', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </section>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content enum">
+<h1 class='fqn'><span class='in-band'>Enum <a href='index.html'>loirc</a>::<wbr><a class='enum' href=''>Code</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-741' class='srclink' href='../src/loirc/code.rs.html#12-196' title='goto source code'>[src]</a></span></h1>
+<pre class='rust enum'>pub enum Code {
+    Pass,
+    Nick,
+    User,
+    Oper,
+    Mode,
+    Service,
+    Quit,
+    Squit,
+    Join,
+    Part,
+    Topic,
+    Names,
+    List,
+    Invite,
+    Kick,
+    Privmsg,
+    Notice,
+    Motd,
+    Lusers,
+    Version,
+    Stats,
+    Links,
+    Time,
+    Connect,
+    Trace,
+    Admin,
+    Info,
+    Servlist,
+    Squery,
+    Who,
+    Whois,
+    Whowas,
+    Kill,
+    Ping,
+    Pong,
+    Error,
+    Away,
+    Rehash,
+    Die,
+    Restart,
+    Summon,
+    Users,
+    Wallops,
+    Userhost,
+    Ison,
+    RplWelcome,
+    RplYourhost,
+    RplCreated,
+    RplMyinfo,
+    RplBounce,
+    RplUserhost,
+    RplIson,
+    RplAway,
+    RplUnaway,
+    RplNowaway,
+    RplWhoisuser,
+    RplWhoisserver,
+    RplWhoisoperator,
+    RplWhoisidle,
+    RplEndofwhois,
+    RplWhoischannels,
+    RplWhowasuser,
+    RplEndofwhowas,
+    RplListstart,
+    RplList,
+    RplListend,
+    RplUniqopis,
+    RplChannelmodeis,
+    RplNotopic,
+    RplTopic,
+    RplInviting,
+    RplSummoning,
+    RplInvitelist,
+    RplEndofinvitelist,
+    RplExceptlist,
+    RplEndofexecptlist,
+    RplVersion,
+    RplWhoreply,
+    RplEndofwho,
+    RplNamreply,
+    RplEndofnames,
+    RplLinks,
+    RplEndoflinks,
+    RplBanlist,
+    RplEndofbanlist,
+    RplInfo,
+    RplEndofinfo,
+    RplMotdstart,
+    RplMotd,
+    RplEndofmotd,
+    RplYoureoper,
+    RplRehashing,
+    RplYoureservice,
+    RplTime,
+    RplUsersstart,
+    RplUsers,
+    RplEndofusers,
+    RplNousers,
+    RplTracelink,
+    RplTraceconnecting,
+    RplTracehandshake,
+    RplTraceuknown,
+    RplTraceoperator,
+    RplTraceuser,
+    RplTraceserver,
+    RplTraceservice,
+    RplTracenewtype,
+    RplTraceclass,
+    RplTracereconnect,
+    RplTracelog,
+    RplTraceend,
+    RplStatslinkinfo,
+    RplStatscommands,
+    RplEndofstats,
+    RplStatsuptime,
+    RplStatsoline,
+    RplUmodeis,
+    RplServlist,
+    RplServlistend,
+    RplLuserclient,
+    RplLuserop,
+    RplLuserunknown,
+    RplLuserchannels,
+    RplLuserme,
+    RplAdminme,
+    RplAdminloc1,
+    RplAdminloc2,
+    RplAdminemail,
+    RplTryagain,
+    ErrNosuchnick,
+    ErrNosuchserver,
+    ErrNosuchchannel,
+    ErrCannotsendtochan,
+    ErrToomanychannels,
+    ErrWasnosuchnick,
+    ErrToomanytargets,
+    ErrNosuchservice,
+    ErrNoorigin,
+    ErrNorecipient,
+    ErrNotexttosend,
+    ErrNotoplevel,
+    ErrWildtoplevel,
+    ErrBadmask,
+    ErrUnknowncommand,
+    ErrNomotd,
+    ErrNoadmininfo,
+    ErrFileerror,
+    ErrNonicknamegiven,
+    ErrErroneousnickname,
+    ErrNicknameinuse,
+    ErrNickcollision,
+    ErrUnavailresource,
+    ErrUsernotinchannel,
+    ErrNotonchannel,
+    ErrUseronchannel,
+    ErrNologin,
+    ErrSummondisabled,
+    ErrUsersdisabled,
+    ErrNotregistered,
+    ErrNeedmoreparams,
+    ErrAlreadyregistred,
+    ErrNopermforhost,
+    ErrPasswdmismatch,
+    ErrYourebannedcreep,
+    ErrYouwillbebanned,
+    ErrKeyset,
+    ErrChannelisfull,
+    ErrUnknownmode,
+    ErrInviteonlychan,
+    ErrBannedfromchan,
+    ErrBadchannelkey,
+    ErrBadchanmask,
+    ErrNochanmodes,
+    ErrBanlistfull,
+    ErrNoprivileges,
+    ErrChanoprivsneeded,
+    ErrCantkillserver,
+    ErrRestricted,
+    ErrUniqopprivsneeded,
+    ErrNooperhost,
+    ErrUmodeunknownflag,
+    ErrUsersdontmatch,
+    Unknown(<a class='struct' href='http://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>),
+}</pre><div class='docblock'><p>This is a representation of IRC message codes.</p>
+
+<p>Is is auto-generated from a Python script.
+See the gen/ folder on GitHub.</p>
+</div><h2 class='variants'>Variants</h2>
+<table><tr><td id='variant.Pass'><code>Pass</code></td><td></td></tr><tr><td id='variant.Nick'><code>Nick</code></td><td></td></tr><tr><td id='variant.User'><code>User</code></td><td></td></tr><tr><td id='variant.Oper'><code>Oper</code></td><td></td></tr><tr><td id='variant.Mode'><code>Mode</code></td><td></td></tr><tr><td id='variant.Service'><code>Service</code></td><td></td></tr><tr><td id='variant.Quit'><code>Quit</code></td><td></td></tr><tr><td id='variant.Squit'><code>Squit</code></td><td></td></tr><tr><td id='variant.Join'><code>Join</code></td><td></td></tr><tr><td id='variant.Part'><code>Part</code></td><td></td></tr><tr><td id='variant.Topic'><code>Topic</code></td><td></td></tr><tr><td id='variant.Names'><code>Names</code></td><td></td></tr><tr><td id='variant.List'><code>List</code></td><td></td></tr><tr><td id='variant.Invite'><code>Invite</code></td><td></td></tr><tr><td id='variant.Kick'><code>Kick</code></td><td></td></tr><tr><td id='variant.Privmsg'><code>Privmsg</code></td><td></td></tr><tr><td id='variant.Notice'><code>Notice</code></td><td></td></tr><tr><td id='variant.Motd'><code>Motd</code></td><td></td></tr><tr><td id='variant.Lusers'><code>Lusers</code></td><td></td></tr><tr><td id='variant.Version'><code>Version</code></td><td></td></tr><tr><td id='variant.Stats'><code>Stats</code></td><td></td></tr><tr><td id='variant.Links'><code>Links</code></td><td></td></tr><tr><td id='variant.Time'><code>Time</code></td><td></td></tr><tr><td id='variant.Connect'><code>Connect</code></td><td></td></tr><tr><td id='variant.Trace'><code>Trace</code></td><td></td></tr><tr><td id='variant.Admin'><code>Admin</code></td><td></td></tr><tr><td id='variant.Info'><code>Info</code></td><td></td></tr><tr><td id='variant.Servlist'><code>Servlist</code></td><td></td></tr><tr><td id='variant.Squery'><code>Squery</code></td><td></td></tr><tr><td id='variant.Who'><code>Who</code></td><td></td></tr><tr><td id='variant.Whois'><code>Whois</code></td><td></td></tr><tr><td id='variant.Whowas'><code>Whowas</code></td><td></td></tr><tr><td id='variant.Kill'><code>Kill</code></td><td></td></tr><tr><td id='variant.Ping'><code>Ping</code></td><td></td></tr><tr><td id='variant.Pong'><code>Pong</code></td><td></td></tr><tr><td id='variant.Error'><code>Error</code></td><td></td></tr><tr><td id='variant.Away'><code>Away</code></td><td></td></tr><tr><td id='variant.Rehash'><code>Rehash</code></td><td></td></tr><tr><td id='variant.Die'><code>Die</code></td><td></td></tr><tr><td id='variant.Restart'><code>Restart</code></td><td></td></tr><tr><td id='variant.Summon'><code>Summon</code></td><td></td></tr><tr><td id='variant.Users'><code>Users</code></td><td></td></tr><tr><td id='variant.Wallops'><code>Wallops</code></td><td></td></tr><tr><td id='variant.Userhost'><code>Userhost</code></td><td></td></tr><tr><td id='variant.Ison'><code>Ison</code></td><td></td></tr><tr><td id='variant.RplWelcome'><code>RplWelcome</code></td><td></td></tr><tr><td id='variant.RplYourhost'><code>RplYourhost</code></td><td></td></tr><tr><td id='variant.RplCreated'><code>RplCreated</code></td><td></td></tr><tr><td id='variant.RplMyinfo'><code>RplMyinfo</code></td><td></td></tr><tr><td id='variant.RplBounce'><code>RplBounce</code></td><td></td></tr><tr><td id='variant.RplUserhost'><code>RplUserhost</code></td><td></td></tr><tr><td id='variant.RplIson'><code>RplIson</code></td><td></td></tr><tr><td id='variant.RplAway'><code>RplAway</code></td><td></td></tr><tr><td id='variant.RplUnaway'><code>RplUnaway</code></td><td></td></tr><tr><td id='variant.RplNowaway'><code>RplNowaway</code></td><td></td></tr><tr><td id='variant.RplWhoisuser'><code>RplWhoisuser</code></td><td></td></tr><tr><td id='variant.RplWhoisserver'><code>RplWhoisserver</code></td><td></td></tr><tr><td id='variant.RplWhoisoperator'><code>RplWhoisoperator</code></td><td></td></tr><tr><td id='variant.RplWhoisidle'><code>RplWhoisidle</code></td><td></td></tr><tr><td id='variant.RplEndofwhois'><code>RplEndofwhois</code></td><td></td></tr><tr><td id='variant.RplWhoischannels'><code>RplWhoischannels</code></td><td></td></tr><tr><td id='variant.RplWhowasuser'><code>RplWhowasuser</code></td><td></td></tr><tr><td id='variant.RplEndofwhowas'><code>RplEndofwhowas</code></td><td></td></tr><tr><td id='variant.RplListstart'><code>RplListstart</code></td><td></td></tr><tr><td id='variant.RplList'><code>RplList</code></td><td></td></tr><tr><td id='variant.RplListend'><code>RplListend</code></td><td></td></tr><tr><td id='variant.RplUniqopis'><code>RplUniqopis</code></td><td></td></tr><tr><td id='variant.RplChannelmodeis'><code>RplChannelmodeis</code></td><td></td></tr><tr><td id='variant.RplNotopic'><code>RplNotopic</code></td><td></td></tr><tr><td id='variant.RplTopic'><code>RplTopic</code></td><td></td></tr><tr><td id='variant.RplInviting'><code>RplInviting</code></td><td></td></tr><tr><td id='variant.RplSummoning'><code>RplSummoning</code></td><td></td></tr><tr><td id='variant.RplInvitelist'><code>RplInvitelist</code></td><td></td></tr><tr><td id='variant.RplEndofinvitelist'><code>RplEndofinvitelist</code></td><td></td></tr><tr><td id='variant.RplExceptlist'><code>RplExceptlist</code></td><td></td></tr><tr><td id='variant.RplEndofexecptlist'><code>RplEndofexecptlist</code></td><td></td></tr><tr><td id='variant.RplVersion'><code>RplVersion</code></td><td></td></tr><tr><td id='variant.RplWhoreply'><code>RplWhoreply</code></td><td></td></tr><tr><td id='variant.RplEndofwho'><code>RplEndofwho</code></td><td></td></tr><tr><td id='variant.RplNamreply'><code>RplNamreply</code></td><td></td></tr><tr><td id='variant.RplEndofnames'><code>RplEndofnames</code></td><td></td></tr><tr><td id='variant.RplLinks'><code>RplLinks</code></td><td></td></tr><tr><td id='variant.RplEndoflinks'><code>RplEndoflinks</code></td><td></td></tr><tr><td id='variant.RplBanlist'><code>RplBanlist</code></td><td></td></tr><tr><td id='variant.RplEndofbanlist'><code>RplEndofbanlist</code></td><td></td></tr><tr><td id='variant.RplInfo'><code>RplInfo</code></td><td></td></tr><tr><td id='variant.RplEndofinfo'><code>RplEndofinfo</code></td><td></td></tr><tr><td id='variant.RplMotdstart'><code>RplMotdstart</code></td><td></td></tr><tr><td id='variant.RplMotd'><code>RplMotd</code></td><td></td></tr><tr><td id='variant.RplEndofmotd'><code>RplEndofmotd</code></td><td></td></tr><tr><td id='variant.RplYoureoper'><code>RplYoureoper</code></td><td></td></tr><tr><td id='variant.RplRehashing'><code>RplRehashing</code></td><td></td></tr><tr><td id='variant.RplYoureservice'><code>RplYoureservice</code></td><td></td></tr><tr><td id='variant.RplTime'><code>RplTime</code></td><td></td></tr><tr><td id='variant.RplUsersstart'><code>RplUsersstart</code></td><td></td></tr><tr><td id='variant.RplUsers'><code>RplUsers</code></td><td></td></tr><tr><td id='variant.RplEndofusers'><code>RplEndofusers</code></td><td></td></tr><tr><td id='variant.RplNousers'><code>RplNousers</code></td><td></td></tr><tr><td id='variant.RplTracelink'><code>RplTracelink</code></td><td></td></tr><tr><td id='variant.RplTraceconnecting'><code>RplTraceconnecting</code></td><td></td></tr><tr><td id='variant.RplTracehandshake'><code>RplTracehandshake</code></td><td></td></tr><tr><td id='variant.RplTraceuknown'><code>RplTraceuknown</code></td><td></td></tr><tr><td id='variant.RplTraceoperator'><code>RplTraceoperator</code></td><td></td></tr><tr><td id='variant.RplTraceuser'><code>RplTraceuser</code></td><td></td></tr><tr><td id='variant.RplTraceserver'><code>RplTraceserver</code></td><td></td></tr><tr><td id='variant.RplTraceservice'><code>RplTraceservice</code></td><td></td></tr><tr><td id='variant.RplTracenewtype'><code>RplTracenewtype</code></td><td></td></tr><tr><td id='variant.RplTraceclass'><code>RplTraceclass</code></td><td></td></tr><tr><td id='variant.RplTracereconnect'><code>RplTracereconnect</code></td><td></td></tr><tr><td id='variant.RplTracelog'><code>RplTracelog</code></td><td></td></tr><tr><td id='variant.RplTraceend'><code>RplTraceend</code></td><td></td></tr><tr><td id='variant.RplStatslinkinfo'><code>RplStatslinkinfo</code></td><td></td></tr><tr><td id='variant.RplStatscommands'><code>RplStatscommands</code></td><td></td></tr><tr><td id='variant.RplEndofstats'><code>RplEndofstats</code></td><td></td></tr><tr><td id='variant.RplStatsuptime'><code>RplStatsuptime</code></td><td></td></tr><tr><td id='variant.RplStatsoline'><code>RplStatsoline</code></td><td></td></tr><tr><td id='variant.RplUmodeis'><code>RplUmodeis</code></td><td></td></tr><tr><td id='variant.RplServlist'><code>RplServlist</code></td><td></td></tr><tr><td id='variant.RplServlistend'><code>RplServlistend</code></td><td></td></tr><tr><td id='variant.RplLuserclient'><code>RplLuserclient</code></td><td></td></tr><tr><td id='variant.RplLuserop'><code>RplLuserop</code></td><td></td></tr><tr><td id='variant.RplLuserunknown'><code>RplLuserunknown</code></td><td></td></tr><tr><td id='variant.RplLuserchannels'><code>RplLuserchannels</code></td><td></td></tr><tr><td id='variant.RplLuserme'><code>RplLuserme</code></td><td></td></tr><tr><td id='variant.RplAdminme'><code>RplAdminme</code></td><td></td></tr><tr><td id='variant.RplAdminloc1'><code>RplAdminloc1</code></td><td></td></tr><tr><td id='variant.RplAdminloc2'><code>RplAdminloc2</code></td><td></td></tr><tr><td id='variant.RplAdminemail'><code>RplAdminemail</code></td><td></td></tr><tr><td id='variant.RplTryagain'><code>RplTryagain</code></td><td></td></tr><tr><td id='variant.ErrNosuchnick'><code>ErrNosuchnick</code></td><td></td></tr><tr><td id='variant.ErrNosuchserver'><code>ErrNosuchserver</code></td><td></td></tr><tr><td id='variant.ErrNosuchchannel'><code>ErrNosuchchannel</code></td><td></td></tr><tr><td id='variant.ErrCannotsendtochan'><code>ErrCannotsendtochan</code></td><td></td></tr><tr><td id='variant.ErrToomanychannels'><code>ErrToomanychannels</code></td><td></td></tr><tr><td id='variant.ErrWasnosuchnick'><code>ErrWasnosuchnick</code></td><td></td></tr><tr><td id='variant.ErrToomanytargets'><code>ErrToomanytargets</code></td><td></td></tr><tr><td id='variant.ErrNosuchservice'><code>ErrNosuchservice</code></td><td></td></tr><tr><td id='variant.ErrNoorigin'><code>ErrNoorigin</code></td><td></td></tr><tr><td id='variant.ErrNorecipient'><code>ErrNorecipient</code></td><td></td></tr><tr><td id='variant.ErrNotexttosend'><code>ErrNotexttosend</code></td><td></td></tr><tr><td id='variant.ErrNotoplevel'><code>ErrNotoplevel</code></td><td></td></tr><tr><td id='variant.ErrWildtoplevel'><code>ErrWildtoplevel</code></td><td></td></tr><tr><td id='variant.ErrBadmask'><code>ErrBadmask</code></td><td></td></tr><tr><td id='variant.ErrUnknowncommand'><code>ErrUnknowncommand</code></td><td></td></tr><tr><td id='variant.ErrNomotd'><code>ErrNomotd</code></td><td></td></tr><tr><td id='variant.ErrNoadmininfo'><code>ErrNoadmininfo</code></td><td></td></tr><tr><td id='variant.ErrFileerror'><code>ErrFileerror</code></td><td></td></tr><tr><td id='variant.ErrNonicknamegiven'><code>ErrNonicknamegiven</code></td><td></td></tr><tr><td id='variant.ErrErroneousnickname'><code>ErrErroneousnickname</code></td><td></td></tr><tr><td id='variant.ErrNicknameinuse'><code>ErrNicknameinuse</code></td><td></td></tr><tr><td id='variant.ErrNickcollision'><code>ErrNickcollision</code></td><td></td></tr><tr><td id='variant.ErrUnavailresource'><code>ErrUnavailresource</code></td><td></td></tr><tr><td id='variant.ErrUsernotinchannel'><code>ErrUsernotinchannel</code></td><td></td></tr><tr><td id='variant.ErrNotonchannel'><code>ErrNotonchannel</code></td><td></td></tr><tr><td id='variant.ErrUseronchannel'><code>ErrUseronchannel</code></td><td></td></tr><tr><td id='variant.ErrNologin'><code>ErrNologin</code></td><td></td></tr><tr><td id='variant.ErrSummondisabled'><code>ErrSummondisabled</code></td><td></td></tr><tr><td id='variant.ErrUsersdisabled'><code>ErrUsersdisabled</code></td><td></td></tr><tr><td id='variant.ErrNotregistered'><code>ErrNotregistered</code></td><td></td></tr><tr><td id='variant.ErrNeedmoreparams'><code>ErrNeedmoreparams</code></td><td></td></tr><tr><td id='variant.ErrAlreadyregistred'><code>ErrAlreadyregistred</code></td><td></td></tr><tr><td id='variant.ErrNopermforhost'><code>ErrNopermforhost</code></td><td></td></tr><tr><td id='variant.ErrPasswdmismatch'><code>ErrPasswdmismatch</code></td><td></td></tr><tr><td id='variant.ErrYourebannedcreep'><code>ErrYourebannedcreep</code></td><td></td></tr><tr><td id='variant.ErrYouwillbebanned'><code>ErrYouwillbebanned</code></td><td></td></tr><tr><td id='variant.ErrKeyset'><code>ErrKeyset</code></td><td></td></tr><tr><td id='variant.ErrChannelisfull'><code>ErrChannelisfull</code></td><td></td></tr><tr><td id='variant.ErrUnknownmode'><code>ErrUnknownmode</code></td><td></td></tr><tr><td id='variant.ErrInviteonlychan'><code>ErrInviteonlychan</code></td><td></td></tr><tr><td id='variant.ErrBannedfromchan'><code>ErrBannedfromchan</code></td><td></td></tr><tr><td id='variant.ErrBadchannelkey'><code>ErrBadchannelkey</code></td><td></td></tr><tr><td id='variant.ErrBadchanmask'><code>ErrBadchanmask</code></td><td></td></tr><tr><td id='variant.ErrNochanmodes'><code>ErrNochanmodes</code></td><td></td></tr><tr><td id='variant.ErrBanlistfull'><code>ErrBanlistfull</code></td><td></td></tr><tr><td id='variant.ErrNoprivileges'><code>ErrNoprivileges</code></td><td></td></tr><tr><td id='variant.ErrChanoprivsneeded'><code>ErrChanoprivsneeded</code></td><td></td></tr><tr><td id='variant.ErrCantkillserver'><code>ErrCantkillserver</code></td><td></td></tr><tr><td id='variant.ErrRestricted'><code>ErrRestricted</code></td><td></td></tr><tr><td id='variant.ErrUniqopprivsneeded'><code>ErrUniqopprivsneeded</code></td><td></td></tr><tr><td id='variant.ErrNooperhost'><code>ErrNooperhost</code></td><td></td></tr><tr><td id='variant.ErrUmodeunknownflag'><code>ErrUmodeunknownflag</code></td><td></td></tr><tr><td id='variant.ErrUsersdontmatch'><code>ErrUsersdontmatch</code></td><td></td></tr><tr><td id='variant.Unknown'><code>Unknown</code></td><td></td></tr></table><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='enum' href='../loirc/enum.Code.html' title='loirc::Code'>Code</a></code></h3><div class='impl-items'><h4 id='method.is_reply' class='method'><code>fn <a href='#method.is_reply' class='fnname'>is_reply</a>(&amp;self) -&gt; <a href='http://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+<h4 id='method.is_error' class='method'><code>fn <a href='#method.is_error' class='fnname'>is_error</a>(&amp;self) -&gt; <a href='http://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+</div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><code>impl <a class='trait' href='http://doc.rust-lang.org/nightly/core/fmt/trait.Display.html' title='core::fmt::Display'>Display</a> for <a class='enum' href='../loirc/enum.Code.html' title='loirc::Code'>Code</a></code></h3><div class='impl-items'><h4 id='method.fmt' class='method'><code>fn <a href='http://doc.rust-lang.org/nightly/core/fmt/trait.Display.html#method.fmt' class='fnname'>fmt</a>(&amp;self, f: &amp;mut <a class='struct' href='http://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html' title='core::fmt::Formatter'>Formatter</a>) -&gt; <a class='type' href='http://doc.rust-lang.org/nightly/core/fmt/type.Result.html' title='core::fmt::Result'>Result</a></code></h4>
+</div><h3 class='impl'><code>impl <a class='trait' href='http://doc.rust-lang.org/nightly/core/str/trait.FromStr.html' title='core::str::FromStr'>FromStr</a> for <a class='enum' href='../loirc/enum.Code.html' title='loirc::Code'>Code</a></code></h3><div class='impl-items'><h4 id='assoc_type.Err' class='type'><code>type Err = <a href='http://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a></code></h4>
+<h4 id='method.from_str' class='method'><code>fn <a href='http://doc.rust-lang.org/nightly/core/str/trait.FromStr.html#method.from_str' class='fnname'>from_str</a>(s: &amp;<a href='http://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>) -&gt; <a class='enum' href='http://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='enum' href='../loirc/enum.Code.html' title='loirc::Code'>Code</a>, <a href='http://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>&gt;</code></h4>
+</div><h3 id='derived_implementations'>Derived Implementations </h3><h3 class='impl'><code>impl <a class='trait' href='http://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html' title='core::cmp::PartialEq'>PartialEq</a> for <a class='enum' href='../loirc/enum.Code.html' title='loirc::Code'>Code</a></code></h3><div class='impl-items'><h4 id='method.eq' class='method'><code>fn <a href='http://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html#method.eq' class='fnname'>eq</a>(&amp;self, __arg_0: &amp;<a class='enum' href='../loirc/enum.Code.html' title='loirc::Code'>Code</a>) -&gt; <a href='http://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+<h4 id='method.ne' class='method'><code>fn <a href='http://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html#method.ne' class='fnname'>ne</a>(&amp;self, __arg_0: &amp;<a class='enum' href='../loirc/enum.Code.html' title='loirc::Code'>Code</a>) -&gt; <a href='http://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+</div><h3 class='impl'><code>impl <a class='trait' href='http://doc.rust-lang.org/nightly/core/cmp/trait.Eq.html' title='core::cmp::Eq'>Eq</a> for <a class='enum' href='../loirc/enum.Code.html' title='loirc::Code'>Code</a></code></h3><div class='impl-items'></div><h3 class='impl'><code>impl <a class='trait' href='http://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html' title='core::fmt::Debug'>Debug</a> for <a class='enum' href='../loirc/enum.Code.html' title='loirc::Code'>Code</a></code></h3><div class='impl-items'><h4 id='method.fmt' class='method'><code>fn <a href='http://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#method.fmt' class='fnname'>fmt</a>(&amp;self, __arg_0: &amp;mut <a class='struct' href='http://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html' title='core::fmt::Formatter'>Formatter</a>) -&gt; <a class='type' href='http://doc.rust-lang.org/nightly/core/fmt/type.Result.html' title='core::fmt::Result'>Result</a></code></h4>
+</div><h3 class='impl'><code>impl <a class='trait' href='http://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> for <a class='enum' href='../loirc/enum.Code.html' title='loirc::Code'>Code</a></code></h3><div class='impl-items'><h4 id='method.clone' class='method'><code>fn <a href='http://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone' class='fnname'>clone</a>(&amp;self) -&gt; <a class='enum' href='../loirc/enum.Code.html' title='loirc::Code'>Code</a></code></h4>
+<h4 id='method.clone_from' class='method'><code>fn <a href='http://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from' class='fnname'>clone_from</a>(&amp;mut self, source: &amp;Self)</code></h4>
+</div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <div id="help" class="hidden">
+        <div>
+            <div class="shortcuts">
+                <h1>Keyboard Shortcuts</h1>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h1>Search Tricks</h1>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>typedef</code> (or
+                    <code>tdef</code>).
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
+        </div>
+    </div>
+
+    
+
+    <script>
+        window.rootPath = "../";
+        window.currentCrate = "loirc";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../jquery.js"></script>
+    <script src="../main.js"></script>
+    
+    <script async src="../search-index.js"></script>
+</body>
+</html>
