@@ -32,6 +32,8 @@ mod connection;
 mod message;
 pub mod util;
 
+pub use time::Duration;
+
 pub use connection::{connect, Event, Error, Reader, ReconnectionSettings, Writer};
 pub use code::Code;
 pub use message::{ParseError, Message, Prefix, User};

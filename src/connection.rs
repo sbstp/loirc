@@ -4,6 +4,8 @@ use std::sync::{Arc, Mutex};
 use std::sync::mpsc::{self, Sender, Receiver};
 use std::thread;
 
+use time::Duration;
+
 use message::{Message, ParseError};
 
 /// This is the comprehensive set of events that can occur.
@@ -252,9 +254,9 @@ pub enum ReconnectionSettings {
         /// leave at least a second of delay, so that it doesn't loop really fast
         /// while getting hostname resolution errors. You can watch the stream of
         /// errors via the ReconnectionError event.
-        delay_between_attempts: u32,
+        delay_between_attempts: Duration,
         /// Wait time after disconnection, before trying to reconnect.
-        delay_after_disconnect: u32,
+        delay_after_disconnect: Duration,
     }
 }
 
@@ -272,8 +274,8 @@ impl Default for ReconnectionSettings {
     fn default() -> ReconnectionSettings {
         ReconnectionSettings::Reconnect {
             max_attempts: 10,
-            delay_between_attempts: 5 * 1000,
-            delay_after_disconnect: 60 * 1000,
+            delay_between_attempts: Duration::seconds(5),
+            delay_after_disconnect: Duration::seconds(60),
         }
     }
 
@@ -334,7 +336,7 @@ fn reader_thread<A: ToSocketAddrs>(address: A, mut reader: BufReader<TcpStream>,
                     }
                 };
 
-                thread::sleep_ms(delay_after_disconnect);
+                thread::sleep_ms(delay_after_disconnect.num_milliseconds() as u32);
 
                 let mut attempts = 0u32;
 
@@ -373,7 +375,7 @@ fn reader_thread<A: ToSocketAddrs>(address: A, mut reader: BufReader<TcpStream>,
                         }
                     }
                     // sleep until we try to reconnect again
-                    thread::sleep_ms(delay_between_attempts);
+                    thread::sleep_ms(delay_between_attempts.num_milliseconds() as u32);
                 }
             }
         } else {
