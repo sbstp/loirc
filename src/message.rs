@@ -137,18 +137,21 @@ pub enum Prefix {
 /// User prefix representation.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct User {
-    nick: String,
-    user: String,
-    host: String,
+    /// Nickname
+    pub nick: String,
+    /// Username
+    pub user: String,
+    /// Hostname
+    pub host: String,
 }
 
 impl User {
 
     pub fn new(nick: &str, user: &str, host: &str) -> User {
         User {
-            nick: nick.to_string(),
-            user: user.to_string(),
-            host: host.to_string(),
+            nick: nick.into(),
+            user: user.into(),
+            host: host.into(),
         }
     }
 
