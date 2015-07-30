@@ -459,12 +459,16 @@
 <span id="417">417</span>
 <span id="418">418</span>
 <span id="419">419</span>
+<span id="420">420</span>
+<span id="421">421</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>io</span>::{<span class='self'>self</span>, <span class='ident'>BufRead</span>, <span class='ident'>BufReader</span>, <span class='ident'>Write</span>};
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>net</span>::{<span class='ident'>Shutdown</span>, <span class='ident'>TcpStream</span>, <span class='ident'>ToSocketAddrs</span>};
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>sync</span>::{<span class='ident'>Arc</span>, <span class='ident'>Mutex</span>};
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>sync</span>::<span class='ident'>mpsc</span>::{<span class='self'>self</span>, <span class='ident'>Sender</span>, <span class='ident'>Receiver</span>};
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>thread</span>;
+
+<span class='kw'>use</span> <span class='ident'>time</span>::<span class='ident'>Duration</span>;
 
 <span class='kw'>use</span> <span class='ident'>message</span>::{<span class='ident'>Message</span>, <span class='ident'>ParseError</span>};
 
@@ -523,7 +527,7 @@
     <span class='ident'>Disconnected</span>,
 }
 
-<span class='doccomment'>/// Used to send messages to the IrcServer.</span>
+<span class='doccomment'>/// Used to send messages to the IRC server.</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// This object is thread safe. You can clone it and send the clones to other</span>
 <span class='doccomment'>/// threads. You can write from multiple threads without any issue. Internally,</span>
@@ -714,9 +718,9 @@
         <span class='doccomment'>/// leave at least a second of delay, so that it doesn&#39;t loop really fast</span>
         <span class='doccomment'>/// while getting hostname resolution errors. You can watch the stream of</span>
         <span class='doccomment'>/// errors via the ReconnectionError event.</span>
-        <span class='ident'>delay_between_attempts</span>: <span class='ident'>u32</span>,
+        <span class='ident'>delay_between_attempts</span>: <span class='ident'>Duration</span>,
         <span class='doccomment'>/// Wait time after disconnection, before trying to reconnect.</span>
-        <span class='ident'>delay_after_disconnect</span>: <span class='ident'>u32</span>,
+        <span class='ident'>delay_after_disconnect</span>: <span class='ident'>Duration</span>,
     }
 }
 
@@ -734,8 +738,8 @@
     <span class='kw'>fn</span> <span class='ident'>default</span>() <span class='op'>-&gt;</span> <span class='ident'>ReconnectionSettings</span> {
         <span class='ident'>ReconnectionSettings</span>::<span class='ident'>Reconnect</span> {
             <span class='ident'>max_attempts</span>: <span class='number'>10</span>,
-            <span class='ident'>delay_between_attempts</span>: <span class='number'>5</span>,
-            <span class='ident'>delay_after_disconnect</span>: <span class='number'>60</span> <span class='op'>*</span> <span class='number'>1000</span>,
+            <span class='ident'>delay_between_attempts</span>: <span class='ident'>Duration</span>::<span class='ident'>seconds</span>(<span class='number'>5</span>),
+            <span class='ident'>delay_after_disconnect</span>: <span class='ident'>Duration</span>::<span class='ident'>seconds</span>(<span class='number'>60</span>),
         }
     }
 
@@ -796,7 +800,7 @@
                     }
                 };
 
-                <span class='ident'>thread</span>::<span class='ident'>sleep_ms</span>(<span class='ident'>delay_after_disconnect</span>);
+                <span class='ident'>thread</span>::<span class='ident'>sleep_ms</span>(<span class='ident'>delay_after_disconnect</span>.<span class='ident'>num_milliseconds</span>() <span class='kw'>as</span> <span class='ident'>u32</span>);
 
                 <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>attempts</span> <span class='op'>=</span> <span class='number'>0u32</span>;
 
@@ -835,7 +839,7 @@
                         }
                     }
                     <span class='comment'>// sleep until we try to reconnect again</span>
-                    <span class='ident'>thread</span>::<span class='ident'>sleep_ms</span>(<span class='ident'>delay_between_attempts</span>);
+                    <span class='ident'>thread</span>::<span class='ident'>sleep_ms</span>(<span class='ident'>delay_between_attempts</span>.<span class='ident'>num_milliseconds</span>() <span class='kw'>as</span> <span class='ident'>u32</span>);
                 }
             }
         } <span class='kw'>else</span> {
