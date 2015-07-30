@@ -219,6 +219,14 @@ impl Writer {
         }
     }
 
+    /// QUIT command.
+    pub fn quit(&self, message: Option<&str>) -> Result<(), Error> {
+        match message {
+            None => self.raw(format!("QUIT :No message\n")),
+            Some(message) => self.raw(format!("QUIT :{}\n", message)),
+        }
+    }
+
 }
 
 impl Into<Event> for Result<Message, ParseError> {
