@@ -1,6 +1,8 @@
-extern crate irc;
+extern crate loirc;
 
 use std::env;
+
+use loirc::{connect, Code, Event, Prefix, ReconnectionSettings};
 
 /// Say "peekaboo" in a channel on freenode and then quit.
 /// target/debug/examples/peekaboo "#mychannel"
@@ -13,8 +15,8 @@ fn main() {
     });
 
     // Connect to freenode and use no not reconnect.
-    let (writer, reader) = irc::connect("irc.freenode.net:6667",
-                                        Some(irc::ReconnectionSettings::DoNotReconnect)).unwrap();
+    let (writer, reader) = connect("irc.freenode.net:6667",
+                                        Some(ReconnectionSettings::DoNotReconnect)).unwrap();
     writer.user("peekaboo", "peekaboo bot");
     writer.nick("peekaboo");
 
@@ -22,18 +24,18 @@ fn main() {
     for event in reader.iter() {
         println!("{:?}", event);
         match event {
-            irc::Event::Message(msg) => {
-                if msg.code == irc::Code::RplWelcome {
+            Event::Message(msg) => {
+                if msg.code == Code::RplWelcome {
                     // join channel, no password
                     writer.join(channel, None);
                 }
                 // JOIN is sent when you join a channel.
-                if msg.code == irc::Code::Join {
+                if msg.code == Code::Join {
                     // If there is a prefix...
                     if let Some(prefix) = msg.prefix {
                         match prefix {
                             // And the prefix is a user...
-                            irc::Prefix::User(user) => {
+                            Prefix::User(user) => {
                                 // And that user's nick is peekaboo, we've joined the channel!
                                 if user.nick == "peekaboo" {
                                     writer.privmsg(channel, "peekaboo");

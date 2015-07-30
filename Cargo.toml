@@ -1,5 +1,5 @@
 [package]
-name = "irc"
+name = "loirc"
 version = "0.1.0"
 authors = ["Simon Bernier St-Pierre <sbernierstpierre@gmail.com>"]
 

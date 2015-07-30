@@ -8,15 +8,17 @@
 //!
 //! ```no_run
 //! // connect to freenode and use the default reconnection settings.
-//! let (writer, reader) = irc::connect("irc.freenode.net:6667", None).unwrap();
+//! use loirc::{connect, Code, Event};
+//!
+//! let (writer, reader) = connect("irc.freenode.net:6667", None).unwrap();
 //! writer.user("username", "realname");
 //! writer.nick("nickname");
 //! // Block until something happens.
 //! for event in reader.iter() {
 //!     match event {
 //!         // Handle messages
-//!         irc::Event::Message(msg) => {
-//!             if msg.code == irc::Code::RplWelcome {
+//!        Event::Message(msg) => {
+//!             if msg.code == Code::RplWelcome {
 //!                 writer.join("#channel", None);
 //!             }
 //!         }

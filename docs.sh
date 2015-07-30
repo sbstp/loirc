@@ -1,7 +1,7 @@
 #!/bin/bash
 # Simple script to push the docs.
 
-REPO="git@github.com:celavy/irc.git"
+REPO="git@github.com:SBSTP/loirc.git"
 TMPDIR="/tmp/rust-docs-$$"
 
 echo "REPO: $REPO"
