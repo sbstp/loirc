@@ -7,9 +7,9 @@
 //! Here's a canonical example.
 //!
 //! ```no_run
-//! // connect to freenode and use the default reconnection settings.
 //! use loirc::{connect, Code, Event};
 //!
+//! // connect to freenode and use the default reconnection settings.
 //! let (writer, reader) = connect("irc.freenode.net:6667", None).unwrap();
 //! writer.user("username", "realname");
 //! writer.nick("nickname");
