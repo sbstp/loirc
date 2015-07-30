@@ -45,7 +45,7 @@
             <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                 [<span class='inner'>&#x2212;</span>]
             </a>
-        </span><a id='src-9433' class='srclink' href='../src/irc/connection.rs.html#403-421' title='goto source code'>[src]</a></span></h1>
+        </span><a id='src-9510' class='srclink' href='../src/irc/connection.rs.html#411-429' title='goto source code'>[src]</a></span></h1>
 <pre class='rust fn'>pub fn connect&lt;A&gt;(address: A, reco_settings: <a class='enum' href='http://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='enum' href='../irc/enum.ReconnectionSettings.html' title='irc::ReconnectionSettings'>ReconnectionSettings</a>&gt;) -&gt; <a class='type' href='http://doc.rust-lang.org/nightly/std/io/error/type.Result.html' title='std::io::error::Result'>Result</a>&lt;<a href='http://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(<a class='struct' href='../irc/struct.Writer.html' title='irc::Writer'>Writer</a>, <a class='type' href='../irc/type.Reader.html' title='irc::Reader'>Reader</a>)</a>&gt; <span class='where'>where A: <a class='trait' href='http://doc.rust-lang.org/nightly/std/net/addr/trait.ToSocketAddrs.html' title='std::net::addr::ToSocketAddrs'>ToSocketAddrs</a> + <a class='trait' href='http://doc.rust-lang.org/nightly/core/marker/trait.Send.html' title='core::marker::Send'>Send</a> + <a class='trait' href='http://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> + 'static</span></pre><div class='docblock'><p>Create a connection to the given address.</p>
 
 <p>A <code>Writer</code>/<code>Reader</code> pair is returned. If the connection fails,

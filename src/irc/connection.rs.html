@@ -461,6 +461,14 @@
 <span id="419">419</span>
 <span id="420">420</span>
 <span id="421">421</span>
+<span id="422">422</span>
+<span id="423">423</span>
+<span id="424">424</span>
+<span id="425">425</span>
+<span id="426">426</span>
+<span id="427">427</span>
+<span id="428">428</span>
+<span id="429">429</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>io</span>::{<span class='self'>self</span>, <span class='ident'>BufRead</span>, <span class='ident'>BufReader</span>, <span class='ident'>Write</span>};
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>net</span>::{<span class='ident'>Shutdown</span>, <span class='ident'>TcpStream</span>, <span class='ident'>ToSocketAddrs</span>};
@@ -680,6 +688,14 @@
         <span class='kw'>match</span> <span class='ident'>message</span> {
             <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='self'>self</span>.<span class='ident'>raw</span>(<span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;PART {}\n&quot;</span>, <span class='ident'>channel</span>)),
             <span class='prelude-val'>Some</span>(<span class='ident'>message</span>) <span class='op'>=&gt;</span> <span class='self'>self</span>.<span class='ident'>raw</span>(<span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;PART {} :{}\n&quot;</span>, <span class='ident'>channel</span>, <span class='ident'>message</span>)),
+        }
+    }
+
+    <span class='doccomment'>/// QUIT command.</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>quit</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>message</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>(), <span class='ident'>Error</span><span class='op'>&gt;</span> {
+        <span class='kw'>match</span> <span class='ident'>message</span> {
+            <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='self'>self</span>.<span class='ident'>raw</span>(<span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;QUIT :No message\n&quot;</span>)),
+            <span class='prelude-val'>Some</span>(<span class='ident'>message</span>) <span class='op'>=&gt;</span> <span class='self'>self</span>.<span class='ident'>raw</span>(<span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;QUIT :{}\n&quot;</span>, <span class='ident'>message</span>)),
         }
     }
 
