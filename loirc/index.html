@@ -54,9 +54,9 @@ events are received from a <code>Reader</code> and commands are sent from one or
 
 <p>Here&#39;s a canonical example.</p>
 <pre class='rust rust-example-rendered'>
-<span class='comment'>// connect to freenode and use the default reconnection settings.</span>
 <span class='kw'>use</span> <span class='ident'>loirc</span>::{<span class='ident'>connect</span>, <span class='ident'>Code</span>, <span class='ident'>Event</span>};
 
+<span class='comment'>// connect to freenode and use the default reconnection settings.</span>
 <span class='kw'>let</span> (<span class='ident'>writer</span>, <span class='ident'>reader</span>) <span class='op'>=</span> <span class='ident'>connect</span>(<span class='string'>&quot;irc.freenode.net:6667&quot;</span>, <span class='prelude-val'>None</span>).<span class='ident'>unwrap</span>();
 <span class='ident'>writer</span>.<span class='ident'>user</span>(<span class='string'>&quot;username&quot;</span>, <span class='string'>&quot;realname&quot;</span>);
 <span class='ident'>writer</span>.<span class='ident'>nick</span>(<span class='string'>&quot;nickname&quot;</span>);
