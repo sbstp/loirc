@@ -61,7 +61,7 @@ enum StreamStatus {
     Disconnected,
 }
 
-/// Used to send messages to the IrcServer.
+/// Used to send messages to the IRC server.
 ///
 /// This object is thread safe. You can clone it and send the clones to other
 /// threads. You can write from multiple threads without any issue. Internally,
