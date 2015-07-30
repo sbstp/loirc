@@ -1,10 +1,10 @@
 [package]
 name = "loirc"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Simon Bernier St-Pierre <sbernierstpierre@gmail.com>"]
 description = "Low-level IRC client library with robustness in mind."
 documentation = "http://sbstp.github.io/loirc/loirc/"
-keywords = ["irc", "client", "irc client"]
+keywords = ["irc", "client"]
 homepage = "https://github.com/SBSTP/loirc"
 repository = "https://github.com/SBSTP/loirc"
 readme = "README.md"
