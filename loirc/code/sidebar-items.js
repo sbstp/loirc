@@ -1,1 +1,1 @@
-initSidebarItems({"enum":[["Code","This is a representation of IRC message codes."]]});
+initSidebarItems({"enum":[["Code","Representation of IRC commands, replies and errors."]]});
