@@ -27,6 +27,8 @@
 //!     }
 //! }
 //! ```
+#![deny(missing_docs)]
+
 extern crate time;
 
 mod activity_monitor;

@@ -4,199 +4,380 @@
 use std::fmt;
 use std::str;
 
-/// This is a representation of IRC message codes.
-///
-/// Is is auto-generated from a Python script.
-/// See the gen/ folder on GitHub.
+/// Representation of IRC commands, replies and errors.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum Code {
+    /// PASS = "PASS"
     Pass,
+    /// NICK = "NICK"
     Nick,
+    /// USER = "USER"
     User,
+    /// OPER = "OPER"
     Oper,
+    /// MODE = "MODE"
     Mode,
+    /// SERVICE = "SERVICE"
     Service,
+    /// QUIT = "QUIT"
     Quit,
+    /// SQUIT = "SQUIT"
     Squit,
+    /// JOIN = "JOIN"
     Join,
+    /// PART = "PART"
     Part,
+    /// TOPIC = "TOPIC"
     Topic,
+    /// NAMES = "NAMES"
     Names,
+    /// LIST = "LIST"
     List,
+    /// INVITE = "INVITE"
     Invite,
+    /// KICK = "KICK"
     Kick,
+    /// PRIVMSG = "PRIVMSG"
     Privmsg,
+    /// NOTICE = "NOTICE"
     Notice,
+    /// MOTD = "MOTD"
     Motd,
+    /// LUSERS = "LUSERS"
     Lusers,
+    /// VERSION = "VERSION"
     Version,
+    /// STATS = "STATS"
     Stats,
+    /// LINKS = "LINKS"
     Links,
+    /// TIME = "TIME"
     Time,
+    /// CONNECT = "CONNECT"
     Connect,
+    /// TRACE = "TRACE"
     Trace,
+    /// ADMIN = "ADMIN"
     Admin,
+    /// INFO = "INFO"
     Info,
+    /// SERVLIST = "SERVLIST"
     Servlist,
+    /// SQUERY = "SQUERY"
     Squery,
+    /// WHO = "WHO"
     Who,
+    /// WHOIS = "WHOIS"
     Whois,
+    /// WHOWAS = "WHOWAS"
     Whowas,
+    /// KILL = "KILL"
     Kill,
+    /// PING = "PING"
     Ping,
+    /// PONG = "PONG"
     Pong,
+    /// ERROR = "ERROR"
     Error,
+    /// AWAY = "AWAY"
     Away,
+    /// REHASH = "REHASH"
     Rehash,
+    /// DIE = "DIE"
     Die,
+    /// RESTART = "RESTART"
     Restart,
+    /// SUMMON = "SUMMON"
     Summon,
+    /// USERS = "USERS"
     Users,
+    /// WALLOPS = "WALLOPS"
     Wallops,
+    /// USERHOST = "USERHOST"
     Userhost,
+    /// ISON = "ISON"
     Ison,
+    /// RPL_WELCOME = "001"
     RplWelcome,
+    /// RPL_YOURHOST = "002"
     RplYourhost,
+    /// RPL_CREATED = "003"
     RplCreated,
+    /// RPL_MYINFO = "004"
     RplMyinfo,
+    /// RPL_BOUNCE = "005"
     RplBounce,
+    /// RPL_USERHOST = "302"
     RplUserhost,
+    /// RPL_ISON = "303"
     RplIson,
+    /// RPL_AWAY = "301"
     RplAway,
+    /// RPL_UNAWAY = "305"
     RplUnaway,
+    /// RPL_NOWAWAY = "306"
     RplNowaway,
+    /// RPL_WHOISUSER = "311"
     RplWhoisuser,
+    /// RPL_WHOISSERVER = "312"
     RplWhoisserver,
+    /// RPL_WHOISOPERATOR = "313"
     RplWhoisoperator,
+    /// RPL_WHOISIDLE = "317"
     RplWhoisidle,
+    /// RPL_ENDOFWHOIS = "318"
     RplEndofwhois,
+    /// RPL_WHOISCHANNELS = "319"
     RplWhoischannels,
+    /// RPL_WHOWASUSER = "314"
     RplWhowasuser,
+    /// RPL_ENDOFWHOWAS = "369"
     RplEndofwhowas,
+    /// RPL_LISTSTART = "321"
     RplListstart,
+    /// RPL_LIST = "322"
     RplList,
+    /// RPL_LISTEND = "323"
     RplListend,
+    /// RPL_UNIQOPIS = "325"
     RplUniqopis,
+    /// RPL_CHANNELMODEIS = "324"
     RplChannelmodeis,
+    /// RPL_NOTOPIC = "331"
     RplNotopic,
+    /// RPL_TOPIC = "332"
     RplTopic,
+    /// RPL_INVITING = "341"
     RplInviting,
+    /// RPL_SUMMONING = "342"
     RplSummoning,
+    /// RPL_INVITELIST = "346"
     RplInvitelist,
+    /// RPL_ENDOFINVITELIST = "347"
     RplEndofinvitelist,
+    /// RPL_EXCEPTLIST = "348"
     RplExceptlist,
+    /// RPL_ENDOFEXECPTLIST = "349"
     RplEndofexecptlist,
+    /// RPL_VERSION = "351"
     RplVersion,
+    /// RPL_WHOREPLY = "352"
     RplWhoreply,
+    /// RPL_ENDOFWHO = "315"
     RplEndofwho,
+    /// RPL_NAMREPLY = "353"
     RplNamreply,
+    /// RPL_ENDOFNAMES = "366"
     RplEndofnames,
+    /// RPL_LINKS = "364"
     RplLinks,
+    /// RPL_ENDOFLINKS = "365"
     RplEndoflinks,
+    /// RPL_BANLIST = "367"
     RplBanlist,
+    /// RPL_ENDOFBANLIST = "368"
     RplEndofbanlist,
+    /// RPL_INFO = "371"
     RplInfo,
+    /// RPL_ENDOFINFO = "374"
     RplEndofinfo,
+    /// RPL_MOTDSTART = "375"
     RplMotdstart,
+    /// RPL_MOTD = "372"
     RplMotd,
+    /// RPL_ENDOFMOTD = "376"
     RplEndofmotd,
+    /// RPL_YOUREOPER = "381"
     RplYoureoper,
+    /// RPL_REHASHING = "382"
     RplRehashing,
+    /// RPL_YOURESERVICE = "383"
     RplYoureservice,
+    /// RPL_TIME = "391"
     RplTime,
+    /// RPL_USERSSTART = "392"
     RplUsersstart,
+    /// RPL_USERS = "393"
     RplUsers,
+    /// RPL_ENDOFUSERS = "394"
     RplEndofusers,
+    /// RPL_NOUSERS = "395"
     RplNousers,
+    /// RPL_TRACELINK = "200"
     RplTracelink,
+    /// RPL_TRACECONNECTING = "201"
     RplTraceconnecting,
+    /// RPL_TRACEHANDSHAKE = "202"
     RplTracehandshake,
+    /// RPL_TRACEUKNOWN = "203"
     RplTraceuknown,
+    /// RPL_TRACEOPERATOR = "204"
     RplTraceoperator,
+    /// RPL_TRACEUSER = "205"
     RplTraceuser,
+    /// RPL_TRACESERVER = "206"
     RplTraceserver,
+    /// RPL_TRACESERVICE = "207"
     RplTraceservice,
+    /// RPL_TRACENEWTYPE = "208"
     RplTracenewtype,
+    /// RPL_TRACECLASS = "209"
     RplTraceclass,
+    /// RPL_TRACERECONNECT = "210"
     RplTracereconnect,
+    /// RPL_TRACELOG = "261"
     RplTracelog,
+    /// RPL_TRACEEND = "262"
     RplTraceend,
+    /// RPL_STATSLINKINFO = "211"
     RplStatslinkinfo,
+    /// RPL_STATSCOMMANDS = "212"
     RplStatscommands,
+    /// RPL_ENDOFSTATS = "219"
     RplEndofstats,
+    /// RPL_STATSUPTIME = "242"
     RplStatsuptime,
+    /// RPL_STATSOLINE = "243"
     RplStatsoline,
+    /// RPL_UMODEIS = "221"
     RplUmodeis,
+    /// RPL_SERVLIST = "234"
     RplServlist,
+    /// RPL_SERVLISTEND = "235"
     RplServlistend,
+    /// RPL_LUSERCLIENT = "251"
     RplLuserclient,
+    /// RPL_LUSEROP = "252"
     RplLuserop,
+    /// RPL_LUSERUNKNOWN = "253"
     RplLuserunknown,
+    /// RPL_LUSERCHANNELS = "254"
     RplLuserchannels,
+    /// RPL_LUSERME = "255"
     RplLuserme,
+    /// RPL_ADMINME = "256"
     RplAdminme,
+    /// RPL_ADMINLOC1 = "257"
     RplAdminloc1,
+    /// RPL_ADMINLOC2 = "258"
     RplAdminloc2,
+    /// RPL_ADMINEMAIL = "259"
     RplAdminemail,
+    /// RPL_TRYAGAIN = "263"
     RplTryagain,
+    /// ERR_NOSUCHNICK = "401"
     ErrNosuchnick,
+    /// ERR_NOSUCHSERVER = "402"
     ErrNosuchserver,
+    /// ERR_NOSUCHCHANNEL = "403"
     ErrNosuchchannel,
+    /// ERR_CANNOTSENDTOCHAN = "404"
     ErrCannotsendtochan,
+    /// ERR_TOOMANYCHANNELS = "405"
     ErrToomanychannels,
+    /// ERR_WASNOSUCHNICK = "406"
     ErrWasnosuchnick,
+    /// ERR_TOOMANYTARGETS = "407"
     ErrToomanytargets,
+    /// ERR_NOSUCHSERVICE = "408"
     ErrNosuchservice,
+    /// ERR_NOORIGIN = "409"
     ErrNoorigin,
+    /// ERR_NORECIPIENT = "411"
     ErrNorecipient,
+    /// ERR_NOTEXTTOSEND = "412"
     ErrNotexttosend,
+    /// ERR_NOTOPLEVEL = "413"
     ErrNotoplevel,
+    /// ERR_WILDTOPLEVEL = "414"
     ErrWildtoplevel,
+    /// ERR_BADMASK = "415"
     ErrBadmask,
+    /// ERR_UNKNOWNCOMMAND = "421"
     ErrUnknowncommand,
+    /// ERR_NOMOTD = "422"
     ErrNomotd,
+    /// ERR_NOADMININFO = "423"
     ErrNoadmininfo,
+    /// ERR_FILEERROR = "424"
     ErrFileerror,
+    /// ERR_NONICKNAMEGIVEN = "431"
     ErrNonicknamegiven,
+    /// ERR_ERRONEOUSNICKNAME = "432"
     ErrErroneousnickname,
+    /// ERR_NICKNAMEINUSE = "433"
     ErrNicknameinuse,
+    /// ERR_NICKCOLLISION = "436"
     ErrNickcollision,
+    /// ERR_UNAVAILRESOURCE = "437"
     ErrUnavailresource,
+    /// ERR_USERNOTINCHANNEL = "441"
     ErrUsernotinchannel,
+    /// ERR_NOTONCHANNEL = "442"
     ErrNotonchannel,
+    /// ERR_USERONCHANNEL = "443"
     ErrUseronchannel,
+    /// ERR_NOLOGIN = "444"
     ErrNologin,
+    /// ERR_SUMMONDISABLED = "445"
     ErrSummondisabled,
+    /// ERR_USERSDISABLED = "446"
     ErrUsersdisabled,
+    /// ERR_NOTREGISTERED = "451"
     ErrNotregistered,
+    /// ERR_NEEDMOREPARAMS = "461"
     ErrNeedmoreparams,
+    /// ERR_ALREADYREGISTRED = "462"
     ErrAlreadyregistred,
+    /// ERR_NOPERMFORHOST = "463"
     ErrNopermforhost,
+    /// ERR_PASSWDMISMATCH = "464"
     ErrPasswdmismatch,
+    /// ERR_YOUREBANNEDCREEP = "465"
     ErrYourebannedcreep,
+    /// ERR_YOUWILLBEBANNED = "466"
     ErrYouwillbebanned,
+    /// ERR_KEYSET = "467"
     ErrKeyset,
+    /// ERR_CHANNELISFULL = "471"
     ErrChannelisfull,
+    /// ERR_UNKNOWNMODE = "472"
     ErrUnknownmode,
+    /// ERR_INVITEONLYCHAN = "473"
     ErrInviteonlychan,
+    /// ERR_BANNEDFROMCHAN = "474"
     ErrBannedfromchan,
+    /// ERR_BADCHANNELKEY = "475"
     ErrBadchannelkey,
+    /// ERR_BADCHANMASK = "476"
     ErrBadchanmask,
+    /// ERR_NOCHANMODES = "477"
     ErrNochanmodes,
+    /// ERR_BANLISTFULL = "478"
     ErrBanlistfull,
+    /// ERR_NOPRIVILEGES = "481"
     ErrNoprivileges,
+    /// ERR_CHANOPRIVSNEEDED = "482"
     ErrChanoprivsneeded,
+    /// ERR_CANTKILLSERVER = "483"
     ErrCantkillserver,
+    /// ERR_RESTRICTED = "484"
     ErrRestricted,
+    /// ERR_UNIQOPPRIVSNEEDED = "485"
     ErrUniqopprivsneeded,
+    /// ERR_NOOPERHOST = "491"
     ErrNooperhost,
+    /// ERR_UMODEUNKNOWNFLAG = "501"
     ErrUmodeunknownflag,
+    /// ERR_USERSDONTMATCH = "502"
     ErrUsersdontmatch,
+    /// Codes that are unknown end up in here.
     Unknown(String),
 }
 
 impl Code {
 
+    /// Checks if the code is a reply.
     pub fn is_reply(&self) -> bool {
         match *self {
             Code::RplWelcome => true,
@@ -287,6 +468,7 @@ impl Code {
         }
     }
 
+    /// Check if the code is en error.
     pub fn is_error(&self) -> bool {
         match *self {
             Code::ErrNosuchnick => true,

@@ -8,16 +8,20 @@ def gen_header():
     print "use std::str;"
 
 def gen_enum(codes):
+    print "/// Representation of IRC commands, replies and errors."
     print "#[derive(Clone, Debug, Eq, PartialEq)]"
     print "pub enum Code {"
     for code in codes:
+        print "    /// " + code.code + ' = "' + code.value + '"'
         print "    " + code.format_code + ","
+    print "    /// Codes that are unknown end up in here."
     print "    Unknown(String),"
     print "}"
 
 def gen_methods(codes):
     print "impl Code {"
     print
+    print "    /// Checks if the code is a reply."
     print "    pub fn is_reply(&self) -> bool {"
     print "        match *self {"
     for code in codes:
@@ -27,6 +31,7 @@ def gen_methods(codes):
     print "        }"
     print "    }"
     print
+    print "    /// Check if the code is en error."
     print "    pub fn is_error(&self) -> bool {"
     print "        match *self {"
     for code in codes:
