@@ -138,20 +138,20 @@ pub enum Prefix {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct User {
     /// Nickname
-    pub nick: String,
+    pub nickname: String,
     /// Username
-    pub user: String,
+    pub username: String,
     /// Hostname
-    pub host: String,
+    pub hostname: String,
 }
 
 impl User {
 
-    pub fn new(nick: &str, user: &str, host: &str) -> User {
+    fn new(nick: &str, user: &str, host: &str) -> User {
         User {
-            nick: nick.into(),
-            user: user.into(),
-            host: host.into(),
+            nickname: nick.into(),
+            username: user.into(),
+            hostname: host.into(),
         }
     }
 

@@ -37,7 +37,7 @@ fn main() {
                             // And the prefix is a user...
                             Prefix::User(user) => {
                                 // And that user's nick is peekaboo, we've joined the channel!
-                                if user.nick == "peekaboo" {
+                                if user.nickname == "peekaboo" {
                                     writer.privmsg(channel, "peekaboo");
                                     // Note that if the reconnection settings said to reconnect,
                                     // it would. Close would "really" stop it.
