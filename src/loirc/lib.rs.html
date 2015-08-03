@@ -97,7 +97,7 @@
 <span class='doccomment'>//! use loirc::{connect, Code, Event};</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! // connect to freenode and use the default reconnection settings.</span>
-<span class='doccomment'>//! let (writer, reader) = connect(&quot;irc.freenode.net:6667&quot;, None).unwrap();</span>
+<span class='doccomment'>//! let (writer, reader) = connect(&quot;irc.freenode.net:6667&quot;, Default::default()).unwrap();</span>
 <span class='doccomment'>//! writer.user(&quot;username&quot;, &quot;realname&quot;);</span>
 <span class='doccomment'>//! writer.nick(&quot;nickname&quot;);</span>
 <span class='doccomment'>//! // Block until something happens.</span>
