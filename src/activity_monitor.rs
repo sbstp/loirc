@@ -182,17 +182,6 @@ impl Default for MonitorSettings {
 
 }
 
-impl Into<MonitorSettings> for Option<MonitorSettings> {
-
-    fn into(self) -> MonitorSettings {
-        match self {
-            Some(s) => s,
-            None => Default::default(),
-        }
-    }
-
-}
-
 /// This struct monitors a connection's activity.
 ///
 /// It works in a few simple, steps.
@@ -212,15 +201,14 @@ impl ActivityMonitor {
     /// Create a new ActivityMonitor.
     ///
     /// The handle to a Writer allows the monitor to notify the connection of disconnects.
-    /// If no settings are given, the default settings are used.
-    pub fn new(handle: &Writer, settings: Option<MonitorSettings>) -> ActivityMonitor {
+    pub fn new(handle: &Writer, settings: MonitorSettings) -> ActivityMonitor {
         let state =  State::new(time::get_time());
 
         let state_clone = state.clone();
         let handle_clone = handle.clone();
 
         thread::spawn(move || {
-            periodic_checker(state_clone, handle_clone, settings.into());
+            periodic_checker(state_clone, handle_clone, settings);
         });
 
         ActivityMonitor {

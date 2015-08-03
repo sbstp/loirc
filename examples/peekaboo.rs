@@ -16,7 +16,7 @@ fn main() {
 
     // Connect to freenode and use no not reconnect.
     let (writer, reader) = connect("irc.freenode.net:6667",
-                                        Some(ReconnectionSettings::DoNotReconnect)).unwrap();
+                                   ReconnectionSettings::DoNotReconnect).unwrap();
     writer.user("peekaboo", "peekaboo bot");
     writer.nick("peekaboo");
 

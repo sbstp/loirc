@@ -289,17 +289,6 @@ impl Default for ReconnectionSettings {
 
 }
 
-impl Into<ReconnectionSettings> for Option<ReconnectionSettings> {
-
-    fn into(self) -> ReconnectionSettings {
-        match self {
-            Some(s) => s,
-            None => Default::default(),
-        }
-    }
-
-}
-
 fn reconnect<A: ToSocketAddrs>(address: &A, handle: &Writer) -> io::Result<(BufReader<TcpStream>)> {
     let stream = try!(TcpStream::connect(address));
     let reader = BufReader::new(try!(stream.try_clone()));
@@ -406,9 +395,8 @@ fn reader_thread<A: ToSocketAddrs>(address: A, mut reader: BufReader<TcpStream>,
 /// A `Writer`/`Reader` pair is returned. If the connection fails,
 /// an error is returned.
 ///
-/// A value of `None` for the `ReconnectionSettings` means use the `Default` settings.
 /// If you don't want to reconnect, use `ReconnectionSettings::DoNotReconnect`.
-pub fn connect<A>(address: A, reco_settings: Option<ReconnectionSettings>) -> io::Result<(Writer, Reader)>
+pub fn connect<A>(address: A, reco_settings: ReconnectionSettings) -> io::Result<(Writer, Reader)>
         // This is so I can send the address to another thread. A better solution would be nice.
         where A: ToSocketAddrs + Send + Clone + 'static {
 
@@ -422,7 +410,7 @@ pub fn connect<A>(address: A, reco_settings: Option<ReconnectionSettings>) -> io
     let reader_handle = writer.clone();
 
     thread::spawn(move || {
-        reader_thread(address, reader, event_sender, reader_handle, reco_settings.into());
+        reader_thread(address, reader, event_sender, reader_handle, reco_settings);
     });
 
     Ok((writer, event_reader))
