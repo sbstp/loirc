@@ -102,7 +102,6 @@ fn periodic_checker(state: State, handle: Writer, settings: MonitorSettings) {
                     MonitorStatus::Activity(activity_ts) => {
                         let diff = time::get_time() - activity_ts;
                         if diff > settings.activity_timeout {
-                            println!("sending a ping");
                             // Make sure we have a server name.
                             match *state.get_server() {
                                 Some(ref server) =>  {
@@ -125,9 +124,7 @@ fn periodic_checker(state: State, handle: Writer, settings: MonitorSettings) {
                     // If the timer expires, the connection is set to disconnect mode.
                     MonitorStatus::Ping(ping_ts) => {
                         let diff = time::get_time() - ping_ts;
-                        println!("checking {}", diff);
                         if diff > settings.ping_timeout {
-                            println!("no ping reply");
                             // trigger reconnection process
                             let _ = handle.disconnect();
                         }
