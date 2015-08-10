@@ -1,5 +1,5 @@
 use std::io::{self, BufRead, BufReader, Write};
-use std::net::{Shutdown, TcpStream, ToSocketAddrs};
+use std::net::{Shutdown, TcpStream};
 use std::sync::{Arc, Mutex};
 use std::sync::mpsc::{self, Sender, Receiver};
 use std::thread;
@@ -289,14 +289,14 @@ impl Default for ReconnectionSettings {
 
 }
 
-fn reconnect<A: ToSocketAddrs>(address: &A, handle: &Writer) -> io::Result<(BufReader<TcpStream>)> {
+fn reconnect(address: &str, handle: &Writer) -> io::Result<(BufReader<TcpStream>)> {
     let stream = try!(TcpStream::connect(address));
     let reader = BufReader::new(try!(stream.try_clone()));
     handle.set_connected(stream);
     Ok((reader))
 }
 
-fn reader_thread<A: ToSocketAddrs>(address: A, mut reader: BufReader<TcpStream>,
+fn reader_thread(address: String, mut reader: BufReader<TcpStream>,
                                    event_sender: Sender<Event>, handle: Writer,
                                    reco_settings: ReconnectionSettings) {
     'read: loop {
@@ -396,11 +396,9 @@ fn reader_thread<A: ToSocketAddrs>(address: A, mut reader: BufReader<TcpStream>,
 /// an error is returned.
 ///
 /// If you don't want to reconnect, use `ReconnectionSettings::DoNotReconnect`.
-pub fn connect<A>(address: A, reco_settings: ReconnectionSettings) -> io::Result<(Writer, Reader)>
-        // This is so I can send the address to another thread. A better solution would be nice.
-        where A: ToSocketAddrs + Send + Clone + 'static {
+pub fn connect<A: AsRef<str>>(address: A, reco_settings: ReconnectionSettings) -> io::Result<(Writer, Reader)> {
 
-    let stream = try!(TcpStream::connect(address.clone()));
+    let stream = try!(TcpStream::connect(address.as_ref()));
     let reader = BufReader::new(try!(stream.try_clone()));
 
     let (event_sender, event_reader) = mpsc::channel::<Event>();
@@ -409,8 +407,9 @@ pub fn connect<A>(address: A, reco_settings: ReconnectionSettings) -> io::Result
     // The reader thread needs a handle to modify the status.
     let reader_handle = writer.clone();
 
+    let address_clone = address.as_ref().to_owned();
     thread::spawn(move || {
-        reader_thread(address, reader, event_sender, reader_handle, reco_settings);
+        reader_thread(address_clone, reader, event_sender, reader_handle, reco_settings);
     });
 
     Ok((writer, event_reader))
