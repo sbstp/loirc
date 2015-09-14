@@ -215,7 +215,7 @@ impl ActivityMonitor {
 
     /// Give an event received from the connection to the monitor.
     ///
-    /// The monitor will process it accordingly. It an Event::Closed event
+    /// The monitor will process it accordingly. If an Event::Closed event
     /// is received, it will shutdown all of its activities.
     pub fn feed(&self, event: &Event) {
         match *event {
@@ -251,7 +251,7 @@ impl ActivityMonitor {
 
 /// Drop stops the background thread and clears the monitor's resources.
 ///
-/// If you can the activity monitor to cease its activites, you can simply drop it.
+/// If you want the activity monitor to cease its activites, you can simply drop it.
 /// It will not affect the connection on which the activity monitor operates.
 impl Drop for ActivityMonitor {
 
