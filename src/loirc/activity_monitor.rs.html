@@ -24,10 +24,10 @@
 
     
 
-    <section class="sidebar">
+    <nav class="sidebar">
         
         
-    </section>
+    </nav>
 
     <nav class="sub">
         <form class="search-form js-only">
@@ -413,7 +413,7 @@
                                     <span class='comment'>// Set the monitor&#39;s status to ping mode.</span>
                                     <span class='op'>*</span><span class='ident'>conn_status</span> <span class='op'>=</span> <span class='ident'>ConnectionStatus</span>::<span class='ident'>Connected</span>(<span class='ident'>MonitorStatus</span>::<span class='ident'>Ping</span>(<span class='ident'>time</span>::<span class='ident'>get_time</span>()));
                                     <span class='comment'>// Send a ping, which should trigger activity is the connection is still alive.</span>
-                                    <span class='kw'>let</span> _ <span class='op'>=</span> <span class='ident'>handle</span>.<span class='ident'>ping</span>(<span class='ident'>server</span>);
+                                    <span class='kw'>let</span> _ <span class='op'>=</span> <span class='ident'>handle</span>.<span class='ident'>raw</span>(<span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;PING {}\n&quot;</span>, <span class='ident'>server</span>));
                                 }
                                 <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> {
                                     <span class='comment'>// This should really never happen. The server&#39;s name should be grabbed</span>
@@ -520,7 +520,7 @@
 
     <span class='doccomment'>/// Give an event received from the connection to the monitor.</span>
     <span class='doccomment'>///</span>
-    <span class='doccomment'>/// The monitor will process it accordingly. It an Event::Closed event</span>
+    <span class='doccomment'>/// The monitor will process it accordingly. If an Event::Closed event</span>
     <span class='doccomment'>/// is received, it will shutdown all of its activities.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>feed</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>event</span>: <span class='kw-2'>&amp;</span><span class='ident'>Event</span>) {
         <span class='kw'>match</span> <span class='op'>*</span><span class='ident'>event</span> {
@@ -556,7 +556,7 @@
 
 <span class='doccomment'>/// Drop stops the background thread and clears the monitor&#39;s resources.</span>
 <span class='doccomment'>///</span>
-<span class='doccomment'>/// If you can the activity monitor to cease its activites, you can simply drop it.</span>
+<span class='doccomment'>/// If you want the activity monitor to cease its activites, you can simply drop it.</span>
 <span class='doccomment'>/// It will not affect the connection on which the activity monitor operates.</span>
 <span class='kw'>impl</span> <span class='ident'>Drop</span> <span class='kw'>for</span> <span class='ident'>ActivityMonitor</span> {
 
@@ -571,10 +571,12 @@
 
     <section class="footer"></section>
 
-    <div id="help" class="hidden">
+    <aside id="help" class="hidden">
         <div>
+            <h1 class="hidden">Help</h1>
+
             <div class="shortcuts">
-                <h1>Keyboard Shortcuts</h1>
+                <h2>Keyboard Shortcuts</h2>
 
                 <dl>
                     <dt>?</dt>
@@ -591,7 +593,7 @@
             </div>
 
             <div class="infos">
-                <h1>Search Tricks</h1>
+                <h2>Search Tricks</h2>
 
                 <p>
                     Prefix searches with a type followed by a colon (e.g.
@@ -601,8 +603,8 @@
                 <p>
                     Accepted types are: <code>fn</code>, <code>mod</code>,
                     <code>struct</code>, <code>enum</code>,
-                    <code>trait</code>, <code>typedef</code> (or
-                    <code>tdef</code>).
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
                 </p>
 
                 <p>
@@ -611,7 +613,7 @@
                 </p>
             </div>
         </div>
-    </div>
+    </aside>
 
     
 

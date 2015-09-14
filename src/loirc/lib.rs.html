@@ -24,10 +24,10 @@
 
     
 
-    <section class="sidebar">
+    <nav class="sidebar">
         
         
-    </section>
+    </nav>
 
     <nav class="sub">
         <form class="search-form js-only">
@@ -98,15 +98,15 @@
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! // connect to freenode and use the default reconnection settings.</span>
 <span class='doccomment'>//! let (writer, reader) = connect(&quot;irc.freenode.net:6667&quot;, Default::default()).unwrap();</span>
-<span class='doccomment'>//! writer.user(&quot;username&quot;, &quot;realname&quot;);</span>
-<span class='doccomment'>//! writer.nick(&quot;nickname&quot;);</span>
+<span class='doccomment'>//! writer.raw(format!(&quot;USER {} 8 * :{}\n&quot;, &quot;username&quot;, &quot;realname&quot;));</span>
+<span class='doccomment'>//! writer.raw(format!(&quot;NICK {}\n&quot;, &quot;nickname&quot;));</span>
 <span class='doccomment'>//! // Block until something happens.</span>
 <span class='doccomment'>//! for event in reader.iter() {</span>
 <span class='doccomment'>//!     match event {</span>
 <span class='doccomment'>//!         // Handle messages</span>
 <span class='doccomment'>//!        Event::Message(msg) =&gt; {</span>
 <span class='doccomment'>//!             if msg.code == Code::RplWelcome {</span>
-<span class='doccomment'>//!                 writer.join(&quot;#channel&quot;, None);</span>
+<span class='doccomment'>//!                 writer.raw(format!(&quot;JOIN {}\n&quot;, &quot;#channel&quot;));</span>
 <span class='doccomment'>//!             }</span>
 <span class='doccomment'>//!         }</span>
 <span class='doccomment'>//!         // Handle other events, such as disconnects.</span>
@@ -135,10 +135,12 @@
 
     <section class="footer"></section>
 
-    <div id="help" class="hidden">
+    <aside id="help" class="hidden">
         <div>
+            <h1 class="hidden">Help</h1>
+
             <div class="shortcuts">
-                <h1>Keyboard Shortcuts</h1>
+                <h2>Keyboard Shortcuts</h2>
 
                 <dl>
                     <dt>?</dt>
@@ -155,7 +157,7 @@
             </div>
 
             <div class="infos">
-                <h1>Search Tricks</h1>
+                <h2>Search Tricks</h2>
 
                 <p>
                     Prefix searches with a type followed by a colon (e.g.
@@ -165,8 +167,8 @@
                 <p>
                     Accepted types are: <code>fn</code>, <code>mod</code>,
                     <code>struct</code>, <code>enum</code>,
-                    <code>trait</code>, <code>typedef</code> (or
-                    <code>tdef</code>).
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
                 </p>
 
                 <p>
@@ -175,7 +177,7 @@
                 </p>
             </div>
         </div>
-    </div>
+    </aside>
 
     
 

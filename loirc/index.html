@@ -24,10 +24,10 @@
 
     
 
-    <section class="sidebar">
+    <nav class="sidebar">
         
         <p class='location'></p><script>window.sidebarCurrent = {name: 'loirc', ty: 'mod', relpath: '../'};</script>
-    </section>
+    </nav>
 
     <nav class="sub">
         <form class="search-form js-only">
@@ -58,15 +58,15 @@ events are received from a <code>Reader</code> and commands are sent from one or
 
 <span class='comment'>// connect to freenode and use the default reconnection settings.</span>
 <span class='kw'>let</span> (<span class='ident'>writer</span>, <span class='ident'>reader</span>) <span class='op'>=</span> <span class='ident'>connect</span>(<span class='string'>&quot;irc.freenode.net:6667&quot;</span>, <span class='ident'>Default</span>::<span class='ident'>default</span>()).<span class='ident'>unwrap</span>();
-<span class='ident'>writer</span>.<span class='ident'>user</span>(<span class='string'>&quot;username&quot;</span>, <span class='string'>&quot;realname&quot;</span>);
-<span class='ident'>writer</span>.<span class='ident'>nick</span>(<span class='string'>&quot;nickname&quot;</span>);
+<span class='ident'>writer</span>.<span class='ident'>raw</span>(<span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;USER {} 8 * :{}\n&quot;</span>, <span class='string'>&quot;username&quot;</span>, <span class='string'>&quot;realname&quot;</span>));
+<span class='ident'>writer</span>.<span class='ident'>raw</span>(<span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;NICK {}\n&quot;</span>, <span class='string'>&quot;nickname&quot;</span>));
 <span class='comment'>// Block until something happens.</span>
 <span class='kw'>for</span> <span class='ident'>event</span> <span class='kw'>in</span> <span class='ident'>reader</span>.<span class='ident'>iter</span>() {
     <span class='kw'>match</span> <span class='ident'>event</span> {
         <span class='comment'>// Handle messages</span>
        <span class='ident'>Event</span>::<span class='ident'>Message</span>(<span class='ident'>msg</span>) <span class='op'>=&gt;</span> {
             <span class='kw'>if</span> <span class='ident'>msg</span>.<span class='ident'>code</span> <span class='op'>==</span> <span class='ident'>Code</span>::<span class='ident'>RplWelcome</span> {
-                <span class='ident'>writer</span>.<span class='ident'>join</span>(<span class='string'>&quot;#channel&quot;</span>, <span class='prelude-val'>None</span>);
+                <span class='ident'>writer</span>.<span class='ident'>raw</span>(<span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;JOIN {}\n&quot;</span>, <span class='string'>&quot;#channel&quot;</span>));
             }
         }
         <span class='comment'>// Handle other events, such as disconnects.</span>
@@ -209,10 +209,12 @@ This also allows for the negative duration; see individual methods for details.<
 
     <section class="footer"></section>
 
-    <div id="help" class="hidden">
+    <aside id="help" class="hidden">
         <div>
+            <h1 class="hidden">Help</h1>
+
             <div class="shortcuts">
-                <h1>Keyboard Shortcuts</h1>
+                <h2>Keyboard Shortcuts</h2>
 
                 <dl>
                     <dt>?</dt>
@@ -229,7 +231,7 @@ This also allows for the negative duration; see individual methods for details.<
             </div>
 
             <div class="infos">
-                <h1>Search Tricks</h1>
+                <h2>Search Tricks</h2>
 
                 <p>
                     Prefix searches with a type followed by a colon (e.g.
@@ -239,8 +241,8 @@ This also allows for the negative duration; see individual methods for details.<
                 <p>
                     Accepted types are: <code>fn</code>, <code>mod</code>,
                     <code>struct</code>, <code>enum</code>,
-                    <code>trait</code>, <code>typedef</code> (or
-                    <code>tdef</code>).
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
                 </p>
 
                 <p>
@@ -249,7 +251,7 @@ This also allows for the negative duration; see individual methods for details.<
                 </p>
             </div>
         </div>
-    </div>
+    </aside>
 
     
 
