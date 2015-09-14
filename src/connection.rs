@@ -147,7 +147,7 @@ impl Writer {
     ///
     /// A new line will be not be added, so make sure that you include it.
     /// An error will be returned if the client is disconnected.
-    pub fn raw(&self, data: String) -> Result<(), Error> {
+    pub fn raw<S: AsRef<str>>(&self, data: S) -> Result<(), Error> {
         let mut status = self.stream.lock().unwrap();
         let mut failed = false;
 
@@ -157,7 +157,7 @@ impl Writer {
             }
             StreamStatus::Connected(ref mut stream) => {
                 // Try to write to the stream.
-                if stream.write(data.as_bytes()).is_err() {
+                if stream.write(data.as_ref().as_bytes()).is_err() {
                     // The write failed, shutdown the connection.
                     let _ = stream.shutdown(Shutdown::Both);
                     failed = true;
