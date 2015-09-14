@@ -557,7 +557,7 @@
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// A new line will be not be added, so make sure that you include it.</span>
     <span class='doccomment'>/// An error will be returned if the client is disconnected.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>raw</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>data</span>: <span class='ident'>String</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>(), <span class='ident'>Error</span><span class='op'>&gt;</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>raw</span><span class='op'>&lt;</span><span class='ident'>S</span>: <span class='ident'>AsRef</span><span class='op'>&lt;</span><span class='ident'>str</span><span class='op'>&gt;&gt;</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>data</span>: <span class='ident'>S</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>(), <span class='ident'>Error</span><span class='op'>&gt;</span> {
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>status</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>stream</span>.<span class='ident'>lock</span>().<span class='ident'>unwrap</span>();
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>failed</span> <span class='op'>=</span> <span class='boolval'>false</span>;
 
@@ -567,7 +567,7 @@
             }
             <span class='ident'>StreamStatus</span>::<span class='ident'>Connected</span>(<span class='kw-2'>ref</span> <span class='kw-2'>mut</span> <span class='ident'>stream</span>) <span class='op'>=&gt;</span> {
                 <span class='comment'>// Try to write to the stream.</span>
-                <span class='kw'>if</span> <span class='ident'>stream</span>.<span class='ident'>write</span>(<span class='ident'>data</span>.<span class='ident'>as_bytes</span>()).<span class='ident'>is_err</span>() {
+                <span class='kw'>if</span> <span class='ident'>stream</span>.<span class='ident'>write</span>(<span class='ident'>data</span>.<span class='ident'>as_ref</span>().<span class='ident'>as_bytes</span>()).<span class='ident'>is_err</span>() {
                     <span class='comment'>// The write failed, shutdown the connection.</span>
                     <span class='kw'>let</span> _ <span class='op'>=</span> <span class='ident'>stream</span>.<span class='ident'>shutdown</span>(<span class='ident'>Shutdown</span>::<span class='ident'>Both</span>);
                     <span class='ident'>failed</span> <span class='op'>=</span> <span class='boolval'>true</span>;

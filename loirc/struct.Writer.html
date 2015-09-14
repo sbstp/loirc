@@ -67,7 +67,7 @@ for good. Use <code>close</code> for this.</p>
 
 <p>There will not be any reconnection attempt.
 An error will be returned if the connection is already closed.</p>
-</div><h4 id='method.raw' class='method'><code>fn <a href='#method.raw' class='fnname'>raw</a>(&amp;self, data: <a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>, <a class='enum' href='../loirc/enum.Error.html' title='loirc::Error'>Error</a>&gt;</code></h4>
+</div><h4 id='method.raw' class='method'><code>fn <a href='#method.raw' class='fnname'>raw</a>&lt;S: <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.AsRef.html' title='core::convert::AsRef'>AsRef</a>&lt;<a href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>&gt;&gt;(&amp;self, data: S) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>, <a class='enum' href='../loirc/enum.Error.html' title='loirc::Error'>Error</a>&gt;</code></h4>
 <div class='docblock'><p>Send a raw string to the IRC server.</p>
 
 <p>A new line will be not be added, so make sure that you include it.
