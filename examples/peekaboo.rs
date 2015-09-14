@@ -17,8 +17,8 @@ fn main() {
     // Connect to freenode and use no not reconnect.
     let (writer, reader) = connect("irc.freenode.net:6667",
                                    ReconnectionSettings::DoNotReconnect).unwrap();
-    writer.user("peekaboo", "peekaboo bot");
-    writer.nick("peekaboo");
+    writer.raw(format!("USER {} 8 * :{}\n", "peekaboo", "peekaboo"));
+    writer.raw(format!("NICK {}\n", "peekaboo"));
 
     // Receive events.
     for event in reader.iter() {
@@ -27,7 +27,7 @@ fn main() {
             Event::Message(msg) => {
                 if msg.code == Code::RplWelcome {
                     // join channel, no password
-                    writer.join(channel, None);
+                    writer.raw(format!("JOIN {}\n", channel));
                 }
                 // JOIN is sent when you join a channel.
                 if msg.code == Code::Join {
@@ -38,10 +38,10 @@ fn main() {
                             Prefix::User(user) => {
                                 // And that user's nick is peekaboo, we've joined the channel!
                                 if user.nickname == "peekaboo" {
-                                    writer.privmsg(channel, "peekaboo");
+                                    writer.raw(format!("PRIVMSG {} :{}\n", channel, "peekaboo"));
                                     // Note that if the reconnection settings said to reconnect,
                                     // it would. Close would "really" stop it.
-                                    writer.quit(Some("peekaboo"));
+                                    writer.raw(format!("QUIT :{}\n", "peekaboo"));
                                     // writer.close();
                                 }
                             }

@@ -108,7 +108,7 @@ fn periodic_checker(state: State, handle: Writer, settings: MonitorSettings) {
                                     // Set the monitor's status to ping mode.
                                     *conn_status = ConnectionStatus::Connected(MonitorStatus::Ping(time::get_time()));
                                     // Send a ping, which should trigger activity is the connection is still alive.
-                                    let _ = handle.ping(server);
+                                    let _ = handle.raw(format!("PING {}\n", server));
                                 }
                                 None => {
                                     // This should really never happen. The server's name should be grabbed

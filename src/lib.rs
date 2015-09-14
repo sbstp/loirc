@@ -11,15 +11,15 @@
 //!
 //! // connect to freenode and use the default reconnection settings.
 //! let (writer, reader) = connect("irc.freenode.net:6667", Default::default()).unwrap();
-//! writer.user("username", "realname");
-//! writer.nick("nickname");
+//! writer.raw(format!("USER {} 8 * :{}\n", "username", "realname"));
+//! writer.raw(format!("NICK {}\n", "nickname"));
 //! // Block until something happens.
 //! for event in reader.iter() {
 //!     match event {
 //!         // Handle messages
 //!        Event::Message(msg) => {
 //!             if msg.code == Code::RplWelcome {
-//!                 writer.join("#channel", None);
+//!                 writer.raw(format!("JOIN {}\n", "#channel"));
 //!             }
 //!         }
 //!         // Handle other events, such as disconnects.

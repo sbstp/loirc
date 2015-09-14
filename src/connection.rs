@@ -178,55 +178,6 @@ impl Writer {
         }
     }
 
-    /// NICK command.
-    pub fn nick(&self, nickname: &str) -> Result<(), Error> {
-        self.raw(format!("NICK {}\n", nickname))
-    }
-
-    /// USER command.
-    pub fn user(&self, username: &str, realname: &str) -> Result<(), Error> {
-        self.raw(format!("USER {} 8 * :{}\n", username, realname))
-    }
-
-    /// PING command.
-    pub fn ping(&self, server: &str) -> Result<(), Error> {
-        self.raw(format!("PING {}\n", server))
-    }
-
-    /// PONG command.
-    pub fn pong(&self, server: &str) -> Result<(), Error> {
-        self.raw(format!("PONG {}\n", server))
-    }
-
-    /// PRIVMSG command.
-    pub fn privmsg(&self, target: &str, text: &str) -> Result<(), Error> {
-        self.raw(format!("PRIVMSG {} :{}\n", target, text))
-    }
-
-    /// JOIN command.
-    pub fn join(&self, channel: &str, password: Option<&str>) -> Result<(), Error> {
-        match password {
-            None => self.raw(format!("JOIN {}\n", channel)),
-            Some(password) => self.raw(format!("JOIN {} {}\n", channel, password)),
-        }
-    }
-
-    /// PART command.
-    pub fn part(&self, channel: &str, message: Option<&str>) -> Result<(), Error> {
-        match message {
-            None => self.raw(format!("PART {}\n", channel)),
-            Some(message) => self.raw(format!("PART {} :{}\n", channel, message)),
-        }
-    }
-
-    /// QUIT command.
-    pub fn quit(&self, message: Option<&str>) -> Result<(), Error> {
-        match message {
-            None => self.raw(format!("QUIT :No message\n")),
-            Some(message) => self.raw(format!("QUIT :{}\n", message)),
-        }
-    }
-
 }
 
 impl Into<Event> for Result<Message, ParseError> {
