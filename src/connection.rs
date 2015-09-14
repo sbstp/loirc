@@ -195,7 +195,7 @@ impl Into<Event> for Result<Message, ParseError> {
 ///
 /// Default is implemented for this type, with fairly sensible settings.
 /// See the Default trait implementation.
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub enum ReconnectionSettings {
     /// Don't try to reconnect after failure.
     DoNotReconnect,

@@ -145,7 +145,7 @@ fn periodic_checker(state: State, handle: Writer, settings: MonitorSettings) {
 /// These settings tell the monitor how to behave.
 ///
 /// They allow you to configure the amount of time between the steps.
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub struct MonitorSettings {
     /// Amount of time since the last activity.
     ///
