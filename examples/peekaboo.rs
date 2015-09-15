@@ -8,11 +8,7 @@ use loirc::{connect, Code, Event, Prefix, ReconnectionSettings};
 /// target/debug/examples/peekaboo "#mychannel"
 fn main() {
     let args: Vec<String> = env::args().collect();
-
-    let channel = args.get(1).unwrap_or_else(|| {
-        println!("Channel must be given as an argument.");
-        panic!();
-    });
+    let channel = args.get(1).expect("Channel must be given as an argument.");
 
     // Connect to freenode and use no not reconnect.
     let (writer, reader) = connect("irc.freenode.net:6667",
