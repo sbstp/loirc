@@ -12,4 +12,4 @@ license = "MIT"
 exclude = ["docs.sh"]
 
 [dependencies]
-time = "*"
+time = "0.1.32"
