@@ -274,6 +274,7 @@ fn reader_thread(address: String, mut reader: BufReader<TcpStream>,
                 // Grab the reconnection settings or break the loop if no reconnection is desired.
                 let (max_attempts, delay_between_attempts, delay_after_disconnect) = match reco_settings {
                     ReconnectionSettings::DoNotReconnect => {
+                        let _ = handle.close();
                         let _ = event_sender.send(Event::Closed("do not reconnect"));
                         break;
                     }
@@ -295,6 +296,7 @@ fn reader_thread(address: String, mut reader: BufReader<TcpStream>,
                     if max_attempts > 0 {
                         attempts += 1;
                         if attempts > max_attempts {
+                            let _ = handle.close();
                             let _ = event_sender.send(Event::Closed("max attempts reached"));
                             break 'read;
                         }
