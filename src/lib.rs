@@ -41,4 +41,4 @@ pub use time::Duration;
 pub use activity_monitor::{ActivityMonitor, MonitorSettings};
 pub use connection::{connect, Event, Error, Reader, ReconnectionSettings, Writer};
 pub use code::Code;
-pub use message::{ParseError, Message, Prefix, User};
+pub use message::{ParseError, Message, Prefix, PrefixUser};

@@ -118,7 +118,7 @@ fn parse_prefix(prefix: &str) -> Option<Prefix> {
                 Some(atpos) => {
                     let user = &rest[..atpos];
                     let host = &rest[atpos + 1..];
-                    return Some(Prefix::User(User::new(nick, user, host)));
+                    return Some(Prefix::User(PrefixUser::new(nick, user, host)));
                 }
             }
         }
@@ -129,14 +129,14 @@ fn parse_prefix(prefix: &str) -> Option<Prefix> {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum Prefix {
     /// Prefix is a user.
-    User(User),
+    User(PrefixUser),
     /// Prefix is a server.
     Server(String),
 }
 
 /// User prefix representation.
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub struct User {
+pub struct PrefixUser {
     /// Nickname
     pub nickname: String,
     /// Username
@@ -145,10 +145,10 @@ pub struct User {
     pub hostname: String,
 }
 
-impl User {
+impl PrefixUser {
 
-    fn new(nick: &str, user: &str, host: &str) -> User {
-        User {
+    fn new(nick: &str, user: &str, host: &str) -> PrefixUser {
+        PrefixUser {
             nickname: nick.into(),
             username: user.into(),
             hostname: host.into(),
@@ -254,5 +254,5 @@ fn test_prefix_user() {
     let res = Message::parse(":bob!bob@bob.com COMMAND :suffix is pretty cool yo");
     assert!(res.is_ok());
     let msg = res.ok().unwrap();
-    assert_eq!(msg.prefix, Some(Prefix::User(User::new("bob", "bob", "bob.com"))));
+    assert_eq!(msg.prefix, Some(Prefix::User(PrefixUser::new("bob", "bob", "bob.com"))));
 }
