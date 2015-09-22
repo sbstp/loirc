@@ -450,7 +450,7 @@
 <span class='doccomment'>/// These settings tell the monitor how to behave.</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// They allow you to configure the amount of time between the steps.</span>
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Copy</span>, <span class='ident'>Clone</span>)]</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Copy</span>, <span class='ident'>Clone</span>, <span class='ident'>Debug</span>, <span class='ident'>Eq</span>, <span class='ident'>PartialEq</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>MonitorSettings</span> {
     <span class='doccomment'>/// Amount of time since the last activity.</span>
     <span class='doccomment'>///</span>
