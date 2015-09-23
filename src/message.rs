@@ -20,8 +20,6 @@ pub struct Message {
     pub code: Code,
     /// Arguments
     pub args: Vec<String>,
-    /// Suffix
-    pub suffix: Option<String>,
 }
 
 impl Message {
@@ -36,9 +34,8 @@ impl Message {
 
         let mut state = line.trim_right_matches("\r\n");
         let mut prefix: Option<Prefix> = None;
-        let code: Option<String>;
+        let code: Option<&str>;
         let mut args: Vec<String> = Vec::new();
-        let mut suffix: Option<String> = None;
 
         // Look for a prefix
         if state.starts_with(":") {
@@ -57,12 +54,12 @@ impl Message {
                 if state.len() == 0 {
                     return Err(ParseError::EmptyMessage);
                 } else {
-                    code = Some(state[..].to_string());
+                    code = Some(&state[..]);
                     state = &state[state.len()..];
                 }
             }
             Some(idx) => {
-                code = Some(state[..idx].to_string());
+                code = Some(state[..idx].into());
                 state = &state[idx + 1..];
             }
         }
@@ -71,16 +68,16 @@ impl Message {
         if state.len() > 0 {
             loop {
                 if state.starts_with(":") {
-                    suffix = Some(state[1..].to_string());
+                    args.push(state[1..].into());
                     break;
                 } else {
                     match state.find(" ") {
                         None => {
-                            args.push(state[..].to_string());
+                            args.push(state[..].into());
                             break;
                         }
                         Some(idx) => {
-                            args.push(state[..idx].to_string());
+                            args.push(state[..idx].into());
                             state = &state[idx + 1..];
                         }
                     }
@@ -93,7 +90,7 @@ impl Message {
             Some(text) => {
                 match text.parse() {
                     Ok(code) => code,
-                    Err(_) => Code::Unknown(text.to_string()),
+                    Err(_) => Code::Unknown(text.into()),
                 }
             }
         };
@@ -102,7 +99,6 @@ impl Message {
             prefix: prefix,
             code: code,
             args: args,
-            suffix: suffix,
         })
     }
 }
@@ -163,8 +159,7 @@ fn test_full() {
     assert!(res.is_ok());
     let msg = res.ok().unwrap();
     assert_eq!(msg.code, Code::Unknown("COMMAND".to_string()));
-    assert_eq!(msg.args, vec!["arg1", "arg2", "arg3"]);
-    assert_eq!(msg.suffix, Some("suffix is pretty cool yo".to_string()));
+    assert_eq!(msg.args, vec!["arg1", "arg2", "arg3", "suffix is pretty cool yo"]);
 }
 
 #[test]
@@ -174,8 +169,7 @@ fn test_no_prefix() {
     let msg = res.ok().unwrap();
     assert_eq!(msg.prefix, None);
     assert_eq!(msg.code, Code::Nick);
-    assert_eq!(msg.args, vec!["arg1", "arg2", "arg3"]);
-    assert_eq!(msg.suffix, Some("suffix is pretty cool yo".to_string()));
+    assert_eq!(msg.args, vec!["arg1", "arg2", "arg3", "suffix is pretty cool yo"]);
 }
 
 #[test]
@@ -185,7 +179,6 @@ fn test_no_suffix() {
     let msg = res.ok().unwrap();
     assert_eq!(msg.code, Code::Nick);
     assert_eq!(msg.args, vec!["arg1", "arg2", "arg3"]);
-    assert_eq!(msg.suffix, None);
 }
 
 #[test]
@@ -194,8 +187,7 @@ fn test_no_args() {
     assert!(res.is_ok());
     let msg = res.ok().unwrap();
     assert_eq!(msg.code, Code::Nick);
-    assert_eq!(msg.args.len(), 0);
-    assert_eq!(msg.suffix, Some("suffix is pretty cool yo".to_string()));
+    assert_eq!(msg.args, vec!["suffix is pretty cool yo"]);
 }
 
 #[test]
@@ -206,7 +198,6 @@ fn test_only_command() {
     assert_eq!(msg.prefix, None);
     assert_eq!(msg.code, Code::Nick);
     assert_eq!(msg.args.len(), 0);
-    assert_eq!(msg.suffix, None);
 }
 
 #[test]
@@ -238,7 +229,7 @@ fn test_prefix_none() {
     let res = Message::parse("COMMAND :suffix is pretty cool yo");
     assert!(res.is_ok());
     let msg = res.ok().unwrap();
-    assert!(msg.prefix == None);
+    assert_eq!(msg.args, vec!["suffix is pretty cool yo"]);
 }
 
 #[test]
@@ -246,7 +237,7 @@ fn test_prefix_server() {
     let res = Message::parse(":irc.freenode.net COMMAND :suffix is pretty cool yo");
     assert!(res.is_ok());
     let msg = res.ok().unwrap();
-    assert_eq!(msg.prefix, Some(Prefix::Server("irc.freenode.net".to_string())));
+    assert_eq!(msg.prefix, Some(Prefix::Server("irc.freenode.net".into())));
 }
 
 #[test]
