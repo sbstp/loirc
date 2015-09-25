@@ -8,7 +8,7 @@ keywords = ["irc", "client"]
 homepage = "https://github.com/SBSTP/loirc"
 repository = "https://github.com/SBSTP/loirc"
 readme = "README.md"
-license = "MIT"
+license = "Zlib"
 exclude = ["docs.sh"]
 
 [dependencies]

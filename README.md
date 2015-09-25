@@ -20,4 +20,4 @@ Examples are also available in the `examples` folder.
 Server side is not a goal of **loirc** at the moment.
 
 ## License
-MIT
+zlib license, see [LICENSE](LICENSE)
