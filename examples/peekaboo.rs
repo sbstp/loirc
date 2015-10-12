@@ -1,7 +1,9 @@
 extern crate loirc;
+extern crate encoding;
 
 use std::env;
 
+use encoding::all::UTF_8;
 use loirc::{connect, Code, Event, Prefix, ReconnectionSettings};
 
 /// Say "peekaboo" in a channel on freenode and then quit.
@@ -12,7 +14,8 @@ fn main() {
 
     // Connect to freenode and use no not reconnect.
     let (writer, reader) = connect("irc.freenode.net:6667",
-                                   ReconnectionSettings::DoNotReconnect).unwrap();
+                                   ReconnectionSettings::DoNotReconnect,
+                                   UTF_8).unwrap();
     writer.raw(format!("USER {} 8 * :{}\n", "peekaboo", "peekaboo"));
     writer.raw(format!("NICK {}\n", "peekaboo"));
 

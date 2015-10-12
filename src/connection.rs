@@ -4,6 +4,7 @@ use std::sync::{Arc, Mutex};
 use std::sync::mpsc::{self, Sender, Receiver};
 use std::thread;
 
+use encoding::{DecoderTrap, EncodingRef, EncoderTrap};
 use time::Duration;
 
 use message::{Message, ParseError};
@@ -71,13 +72,15 @@ enum StreamStatus {
 #[derive(Clone)]
 pub struct Writer {
     stream: Arc<Mutex<StreamStatus>>,
+    encoding: EncodingRef,
 }
 
 impl Writer {
 
-    fn new(stream: TcpStream) -> Writer {
+    fn new(stream: TcpStream, encoding: EncodingRef) -> Writer {
         Writer {
-            stream: Arc::new(Mutex::new(StreamStatus::Connected(stream)))
+            stream: Arc::new(Mutex::new(StreamStatus::Connected(stream))),
+            encoding: encoding,
         }
     }
 
@@ -157,7 +160,8 @@ impl Writer {
             }
             StreamStatus::Connected(ref mut stream) => {
                 // Try to write to the stream.
-                if stream.write(data.as_ref().as_bytes()).is_err() {
+                let bytes = self.encoding.encode(data.as_ref(), EncoderTrap::Ignore).unwrap();
+                if stream.write(&bytes).is_err() {
                     // The write failed, shutdown the connection.
                     let _ = stream.shutdown(Shutdown::Both);
                     failed = true;
@@ -249,10 +253,11 @@ fn reconnect(address: &str, handle: &Writer) -> io::Result<(BufReader<TcpStream>
 
 fn reader_thread(address: String, mut reader: BufReader<TcpStream>,
                                    event_sender: Sender<Event>, handle: Writer,
-                                   reco_settings: ReconnectionSettings) {
+                                   reco_settings: ReconnectionSettings,
+                                   encoding: EncodingRef) {
     'read: loop {
-        let mut line = String::new();
-        let res = reader.read_line(&mut line);
+        let mut buff = Vec::new();
+        let res = reader.read_until(b'\n', &mut buff);
 
         // If there's an error or a zero length read, we should check to reconnect or exit.
         // If the size is 0, it means that the socket was shutdown.
@@ -329,6 +334,8 @@ fn reader_thread(address: String, mut reader: BufReader<TcpStream>,
                 }
             }
         } else {
+            // decode the message
+            let line = encoding.decode(&buff, DecoderTrap::Ignore).unwrap();
             // Size is bigger than 0, try to parse the message. Send the result in the channel.
             if event_sender.send(Message::parse(&line).into()).is_err() {
                 break;
@@ -349,20 +356,19 @@ fn reader_thread(address: String, mut reader: BufReader<TcpStream>,
 /// an error is returned.
 ///
 /// If you don't want to reconnect, use `ReconnectionSettings::DoNotReconnect`.
-pub fn connect<A: AsRef<str>>(address: A, reco_settings: ReconnectionSettings) -> io::Result<(Writer, Reader)> {
-
+pub fn connect<A: AsRef<str>>(address: A, reco_settings: ReconnectionSettings, encoding: EncodingRef) -> io::Result<(Writer, Reader)> {
     let stream = try!(TcpStream::connect(address.as_ref()));
     let reader = BufReader::new(try!(stream.try_clone()));
 
     let (event_sender, event_reader) = mpsc::channel::<Event>();
 
-    let writer = Writer::new(stream);
+    let writer = Writer::new(stream, encoding);
     // The reader thread needs a handle to modify the status.
     let reader_handle = writer.clone();
 
-    let address_clone = address.as_ref().to_owned();
+    let address_clone = address.as_ref().into();
     thread::spawn(move || {
-        reader_thread(address_clone, reader, event_sender, reader_handle, reco_settings);
+        reader_thread(address_clone, reader, event_sender, reader_handle, reco_settings, encoding);
     });
 
     Ok((writer, event_reader))

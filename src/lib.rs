@@ -7,28 +7,34 @@
 //! Here's a canonical example.
 //!
 //! ```no_run
+//! extern crate encoding;
+//! extern crate loirc;
+//!
+//! use encoding::all::UTF_8;
 //! use loirc::{connect, Code, Event};
 //!
-//! // connect to freenode and use the default reconnection settings.
-//! let (writer, reader) = connect("irc.freenode.net:6667", Default::default()).unwrap();
-//! writer.raw(format!("USER {} 8 * :{}\n", "username", "realname"));
-//! writer.raw(format!("NICK {}\n", "nickname"));
-//! // Block until something happens.
-//! for event in reader.iter() {
-//!     match event {
-//!         // Handle messages
-//!        Event::Message(msg) => {
-//!             if msg.code == Code::RplWelcome {
-//!                 writer.raw(format!("JOIN {}\n", "#channel"));
+//! fn main() {
+//!     // connect to freenode and use the default reconnection settings.
+//!     let (writer, reader) = connect("irc.freenode.net:6667", Default::default(), UTF_8).unwrap();
+//!     writer.raw(format!("USER {} 8 * :{}\n", "username", "realname"));
+//!     writer.raw(format!("NICK {}\n", "nickname"));
+//!     // Block until something happens.
+//!     for event in reader.iter() {
+//!         match event {
+//!             // Handle messages
+//!             Event::Message(msg) => {
+//!                 if msg.code == Code::RplWelcome {
+//!                     writer.raw(format!("JOIN {}\n", "#channel"));
+//!                 }
 //!             }
+//!             // Handle other events, such as disconnects.
+//!             _ => {}
 //!         }
-//!         // Handle other events, such as disconnects.
-//!         _ => {}
 //!     }
 //! }
 //! ```
 #![deny(missing_docs)]
-
+extern crate encoding;
 extern crate time;
 
 mod activity_monitor;
