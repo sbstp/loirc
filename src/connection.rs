@@ -5,7 +5,7 @@ use std::sync::mpsc::{self, Sender, Receiver};
 use std::thread;
 
 use encoding::{DecoderTrap, EncodingRef, EncoderTrap};
-use time::Duration;
+use std::time::Duration;
 
 use message::{Message, ParseError};
 
@@ -237,8 +237,8 @@ impl Default for ReconnectionSettings {
     fn default() -> ReconnectionSettings {
         ReconnectionSettings::Reconnect {
             max_attempts: 10,
-            delay_between_attempts: Duration::seconds(5),
-            delay_after_disconnect: Duration::seconds(60),
+            delay_between_attempts: Duration::from_secs(5),
+            delay_after_disconnect: Duration::from_secs(60),
         }
     }
 
@@ -290,7 +290,7 @@ fn reader_thread(address: String, mut reader: BufReader<TcpStream>,
                     }
                 };
 
-                thread::sleep_ms(delay_after_disconnect.num_milliseconds() as u32);
+                thread::sleep(delay_after_disconnect);
 
                 let mut attempts = 0u32;
 
@@ -330,7 +330,7 @@ fn reader_thread(address: String, mut reader: BufReader<TcpStream>,
                         }
                     }
                     // sleep until we try to reconnect again
-                    thread::sleep_ms(delay_between_attempts.num_milliseconds() as u32);
+                    thread::sleep(delay_between_attempts);
                 }
             }
         } else {

@@ -1,7 +1,7 @@
 use std::thread;
 use std::sync::{Arc, Mutex, MutexGuard};
 
-use time::{self, Duration, Timespec};
+use std::time::{Duration, Instant};
 
 use connection::{Event, Writer};
 use message::Prefix;
@@ -9,9 +9,9 @@ use message::Prefix;
 #[derive(Clone)]
 enum MonitorStatus {
     // Last activity, timespec is when.
-    Activity(Timespec),
+    Activity(Instant),
     // Ping was sent, timespec is when.
-    Ping(Timespec),
+    Ping(Instant),
 }
 
 #[derive(Clone)]
@@ -37,7 +37,7 @@ struct State {
 
 impl State {
 
-    fn new(ts: Timespec) -> State {
+    fn new(ts: Instant) -> State {
         let conn_status = ConnectionStatus::Connected(MonitorStatus::Activity(ts));
         State {
             status: Arc::new(Mutex::new(conn_status)),
@@ -46,7 +46,7 @@ impl State {
     }
 
     // Set the last activity's timestamp.
-    fn set_activity(&self, ts: Timespec) {
+    fn set_activity(&self, ts: Instant) {
         *self.status.lock().unwrap() = ConnectionStatus::Connected(MonitorStatus::Activity(ts));
     }
 
@@ -100,13 +100,13 @@ fn periodic_checker(state: State, handle: Writer, settings: MonitorSettings) {
                     // If the timer expires, it will ping the server and set the monitor status
                     // to ping mode.
                     MonitorStatus::Activity(activity_ts) => {
-                        let diff = time::get_time() - activity_ts;
+                        let diff = activity_ts.elapsed();
                         if diff > settings.activity_timeout {
                             // Make sure we have a server name.
                             match *state.get_server() {
                                 Some(ref server) =>  {
                                     // Set the monitor's status to ping mode.
-                                    *conn_status = ConnectionStatus::Connected(MonitorStatus::Ping(time::get_time()));
+                                    *conn_status = ConnectionStatus::Connected(MonitorStatus::Ping(Instant::now()));
                                     // Send a ping, which should trigger activity is the connection is still alive.
                                     let _ = handle.raw(format!("PING {}\n", server));
                                 }
@@ -123,7 +123,7 @@ fn periodic_checker(state: State, handle: Writer, settings: MonitorSettings) {
                     // The monitor is in ping mode, which means it expects a ping response anytime.
                     // If the timer expires, the connection is set to disconnect mode.
                     MonitorStatus::Ping(ping_ts) => {
-                        let diff = time::get_time() - ping_ts;
+                        let diff = ping_ts.elapsed();
                         if diff > settings.ping_timeout {
                             // trigger reconnection process
                             let _ = handle.disconnect();
@@ -138,7 +138,7 @@ fn periodic_checker(state: State, handle: Writer, settings: MonitorSettings) {
 
         // Drop the lock to avoid a dead lock.
         drop(conn_status);
-        thread::sleep_ms(1000);
+        thread::sleep(Duration::from_secs(1));
     }
 }
 
@@ -172,8 +172,8 @@ impl Default for MonitorSettings {
 
     fn default() -> MonitorSettings {
         MonitorSettings {
-            activity_timeout: Duration::seconds(60),
-            ping_timeout: Duration::seconds(15),
+            activity_timeout: Duration::from_secs(60),
+            ping_timeout: Duration::from_secs(15),
         }
     }
 
@@ -199,7 +199,7 @@ impl ActivityMonitor {
     ///
     /// The handle to a Writer allows the monitor to notify the connection of disconnects.
     pub fn new(handle: &Writer, settings: MonitorSettings) -> ActivityMonitor {
-        let state =  State::new(time::get_time());
+        let state =  State::new(Instant::now());
 
         let state_clone = state.clone();
         let handle_clone = handle.clone();
@@ -227,10 +227,10 @@ impl ActivityMonitor {
                 self.state.unset_server();
             }
             Event::Reconnected => {
-                self.state.set_activity(time::get_time());
+                self.state.set_activity(Instant::now());
             }
             Event::Message(ref msg) => {
-                self.state.set_activity(time::get_time());
+                self.state.set_activity(Instant::now());
                 if let Some(ref prefix) = msg.prefix {
                     match *prefix {
                         Prefix::Server(ref name) => {

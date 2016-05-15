@@ -35,7 +35,6 @@
 //! ```
 #![deny(missing_docs)]
 extern crate encoding;
-extern crate time;
 
 mod activity_monitor;
 mod code;
