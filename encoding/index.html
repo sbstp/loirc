@@ -9,6 +9,7 @@
 
     <title>encoding - Rust</title>
 
+    <link rel="stylesheet" type="text/css" href="../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../main.css">
 
     
@@ -66,11 +67,13 @@ encoding = &quot;=0.2.32&quot;
 </code></pre>
 
 <p>Then put this in your crate root:</p>
+
 <pre class='rust rust-example-rendered'>
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>encoding</span>;</pre>
 
 <h2 id='overview' class='section-header'><a href='#overview'>Overview</a></h2>
 <p>To encode a string:</p>
+
 <pre class='rust rust-example-rendered'>
 <span class='kw'>use</span> <span class='ident'>encoding</span>::{<span class='ident'>Encoding</span>, <span class='ident'>EncoderTrap</span>};
 <span class='kw'>use</span> <span class='ident'>encoding</span>::<span class='ident'>all</span>::<span class='ident'>ISO_8859_1</span>;
@@ -79,6 +82,7 @@ encoding = &quot;=0.2.32&quot;
            <span class='prelude-val'>Ok</span>(<span class='macro'>vec</span><span class='macro'>!</span>[<span class='number'>99</span>,<span class='number'>97</span>,<span class='number'>102</span>,<span class='number'>233</span>]));</pre>
 
 <p>To encode a string with unrepresentable characters:</p>
+
 <pre class='rust rust-example-rendered'>
 <span class='kw'>use</span> <span class='ident'>encoding</span>::{<span class='ident'>Encoding</span>, <span class='ident'>EncoderTrap</span>};
 <span class='kw'>use</span> <span class='ident'>encoding</span>::<span class='ident'>all</span>::<span class='ident'>ISO_8859_2</span>;
@@ -92,6 +96,7 @@ encoding = &quot;=0.2.32&quot;
            <span class='prelude-val'>Ok</span>(<span class='macro'>vec</span><span class='macro'>!</span>[<span class='number'>65</span>,<span class='number'>99</span>,<span class='number'>109</span>,<span class='number'>101</span>,<span class='number'>38</span>,<span class='number'>35</span>,<span class='number'>49</span>,<span class='number'>54</span>,<span class='number'>57</span>,<span class='number'>59</span>]));</pre>
 
 <p>To decode a byte sequence:</p>
+
 <pre class='rust rust-example-rendered'>
 <span class='kw'>use</span> <span class='ident'>encoding</span>::{<span class='ident'>Encoding</span>, <span class='ident'>DecoderTrap</span>};
 <span class='kw'>use</span> <span class='ident'>encoding</span>::<span class='ident'>all</span>::<span class='ident'>ISO_8859_1</span>;
@@ -100,6 +105,7 @@ encoding = &quot;=0.2.32&quot;
            <span class='prelude-val'>Ok</span>(<span class='string'>&quot;caf\u{e9}&quot;</span>.<span class='ident'>to_string</span>()));</pre>
 
 <p>To decode a byte sequence with invalid sequences:</p>
+
 <pre class='rust rust-example-rendered'>
 <span class='kw'>use</span> <span class='ident'>encoding</span>::{<span class='ident'>Encoding</span>, <span class='ident'>DecoderTrap</span>};
 <span class='kw'>use</span> <span class='ident'>encoding</span>::<span class='ident'>all</span>::<span class='ident'>ISO_8859_6</span>;
@@ -111,6 +117,7 @@ encoding = &quot;=0.2.32&quot;
            <span class='prelude-val'>Ok</span>(<span class='string'>&quot;Acme&quot;</span>.<span class='ident'>to_string</span>()));</pre>
 
 <p>To encode or decode the input into the already allocated buffer:</p>
+
 <pre class='rust rust-example-rendered'>
 <span class='kw'>use</span> <span class='ident'>encoding</span>::{<span class='ident'>Encoding</span>, <span class='ident'>EncoderTrap</span>, <span class='ident'>DecoderTrap</span>};
 <span class='kw'>use</span> <span class='ident'>encoding</span>::<span class='ident'>all</span>::{<span class='ident'>ISO_8859_2</span>, <span class='ident'>ISO_8859_6</span>};
@@ -125,6 +132,7 @@ encoding = &quot;=0.2.32&quot;
 <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>chars</span>, <span class='string'>&quot;Acme\u{fffd}&quot;</span>);</pre>
 
 <p>A practical example of custom encoder traps:</p>
+
 <pre class='rust rust-example-rendered'>
 <span class='kw'>use</span> <span class='ident'>encoding</span>::{<span class='ident'>Encoding</span>, <span class='ident'>ByteWriter</span>, <span class='ident'>EncoderTrap</span>, <span class='ident'>DecoderTrap</span>};
 <span class='kw'>use</span> <span class='ident'>encoding</span>::<span class='ident'>types</span>::<span class='ident'>RawEncoder</span>;
@@ -146,6 +154,7 @@ encoding = &quot;=0.2.32&quot;
            <span class='prelude-val'>Ok</span>(<span class='string'>&quot;Hello, &amp;#x4e16;&amp;#x754c;!&quot;</span>.<span class='ident'>to_string</span>()));</pre>
 
 <p>Getting the encoding from the string label, as specified in WHATWG Encoding standard:</p>
+
 <pre class='rust rust-example-rendered'>
 <span class='kw'>use</span> <span class='ident'>encoding</span>::{<span class='ident'>Encoding</span>, <span class='ident'>DecoderTrap</span>};
 <span class='kw'>use</span> <span class='ident'>encoding</span>::<span class='ident'>label</span>::<span class='ident'>encoding_from_whatwg_label</span>;
@@ -251,7 +260,6 @@ Whenever in doubt, look at the source code and specifications for detailed expla
                                title='encoding::all'>all</a></td>
                         <td class='docblock short'>
                              <p>A list of all supported encodings. Useful for encodings fixed in the compile time.</p>
-
                         </td>
                     </tr>
                 
@@ -260,7 +268,6 @@ Whenever in doubt, look at the source code and specifications for detailed expla
                                title='encoding::codec'>codec</a></td>
                         <td class='docblock short'>
                              <p>Codec implementations.</p>
-
                         </td>
                     </tr>
                 
@@ -269,7 +276,6 @@ Whenever in doubt, look at the source code and specifications for detailed expla
                                title='encoding::label'>label</a></td>
                         <td class='docblock short'>
                              <p>An interface for retrieving an encoding (or a set of encodings) from a string/numeric label.</p>
-
                         </td>
                     </tr>
                 
@@ -278,7 +284,6 @@ Whenever in doubt, look at the source code and specifications for detailed expla
                                title='encoding::types'>types</a></td>
                         <td class='docblock short'>
                              <p>Interface to the character encoding.</p>
-
                         </td>
                     </tr>
                 </table></section>
@@ -324,7 +329,7 @@ Whenever in doubt, look at the source code and specifications for detailed expla
 
                 <p>
                     Search functions by type signature (e.g.
-                    <code>vec -> usize</code>)
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
                 </p>
             </div>
         </div>
@@ -340,6 +345,6 @@ Whenever in doubt, look at the source code and specifications for detailed expla
     <script src="../jquery.js"></script>
     <script src="../main.js"></script>
     
-    <script async src="../search-index.js"></script>
+    <script defer src="../search-index.js"></script>
 </body>
 </html>

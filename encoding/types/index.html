@@ -9,6 +9,7 @@
 
     <title>encoding::types - Rust</title>
 
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
 
     
@@ -100,7 +101,6 @@ It still has to feed the input bytes starting at the second offset again.</p>
                                title='encoding::types::CodecError'>CodecError</a></td>
                         <td class='docblock short'>
                              <p>Error information from either encoder or decoder.</p>
-
                         </td>
                     </tr>
                 </table><h2 id='enums' class='section-header'><a href="#enums">Enums</a></h2>
@@ -110,7 +110,6 @@ It still has to feed the input bytes starting at the second offset again.</p>
                                title='encoding::types::DecoderTrap'>DecoderTrap</a></td>
                         <td class='docblock short'>
                              <p>Trap, which handles decoder errors.</p>
-
                         </td>
                     </tr>
                 
@@ -128,7 +127,6 @@ It still has to feed the input bytes starting at the second offset again.</p>
                                title='encoding::types::ByteWriter'>ByteWriter</a></td>
                         <td class='docblock short'>
                              <p>Byte writer used by encoders. In most cases this will be an owned vector of <code>u8</code>.</p>
-
                         </td>
                     </tr>
                 
@@ -137,7 +135,6 @@ It still has to feed the input bytes starting at the second offset again.</p>
                                title='encoding::types::Encoding'>Encoding</a></td>
                         <td class='docblock short'>
                              <p>Character encoding.</p>
-
                         </td>
                     </tr>
                 
@@ -147,7 +144,6 @@ It still has to feed the input bytes starting at the second offset again.</p>
                         <td class='docblock short'>
                              <p>Decoder converting a byte sequence into a Unicode string.
 This is a lower level interface, and normally <code>Encoding::decode</code> should be used instead.</p>
-
                         </td>
                     </tr>
                 
@@ -157,7 +153,6 @@ This is a lower level interface, and normally <code>Encoding::decode</code> shou
                         <td class='docblock short'>
                              <p>Encoder converting a Unicode string into a byte sequence.
 This is a lower level interface, and normally <code>Encoding::encode</code> should be used instead.</p>
-
                         </td>
                     </tr>
                 
@@ -166,7 +161,6 @@ This is a lower level interface, and normally <code>Encoding::encode</code> shou
                                title='encoding::types::StringWriter'>StringWriter</a></td>
                         <td class='docblock short'>
                              <p>String writer used by decoders. In most cases this will be an owned string.</p>
-
                         </td>
                     </tr>
                 </table><h2 id='functions' class='section-header'><a href="#functions">Functions</a></h2>
@@ -178,7 +172,6 @@ This is a lower level interface, and normally <code>Encoding::encode</code> shou
                              <p>Determine the encoding by looking for a Byte Order Mark (BOM)
 and decoded a single string in memory.
 Return the result and the used encoding.</p>
-
                         </td>
                     </tr>
                 </table><h2 id='types' class='section-header'><a href="#types">Type Definitions</a></h2>
@@ -188,7 +181,6 @@ Return the result and the used encoding.</p>
                                title='encoding::types::DecoderTrapFunc'>DecoderTrapFunc</a></td>
                         <td class='docblock short'>
                              <p>A type of the bare function in <code>DecoderTrap</code> values.</p>
-
                         </td>
                     </tr>
                 
@@ -197,7 +189,6 @@ Return the result and the used encoding.</p>
                                title='encoding::types::EncoderTrapFunc'>EncoderTrapFunc</a></td>
                         <td class='docblock short'>
                              <p>A type of the bare function in <code>EncoderTrap</code> values.</p>
-
                         </td>
                     </tr>
                 
@@ -207,7 +198,6 @@ Return the result and the used encoding.</p>
                         <td class='docblock short'>
                              <p>A trait object using dynamic dispatch which is a sendable reference to the encoding,
 for code where the encoding is not known at compile-time.</p>
-
                         </td>
                     </tr>
                 </table></section>
@@ -253,7 +243,7 @@ for code where the encoding is not known at compile-time.</p>
 
                 <p>
                     Search functions by type signature (e.g.
-                    <code>vec -> usize</code>)
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
                 </p>
             </div>
         </div>
@@ -269,6 +259,6 @@ for code where the encoding is not known at compile-time.</p>
     <script src="../../jquery.js"></script>
     <script src="../../main.js"></script>
     
-    <script async src="../../search-index.js"></script>
+    <script defer src="../../search-index.js"></script>
 </body>
 </html>
