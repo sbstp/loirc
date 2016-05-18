@@ -2,9 +2,9 @@ extern crate loirc;
 extern crate encoding;
 
 use std::env;
+use std::io;
 
-use encoding::all::UTF_8;
-use loirc::{connect, Code, Event, Prefix, ReconnectionSettings};
+use loirc::{Code, ConnectionManager, Connection, Message, RawEvents, Writer};
 
 /// Say "peekaboo" in a channel on freenode and then quit.
 /// target/debug/examples/peekaboo "#mychannel"
@@ -13,43 +13,38 @@ fn main() {
     let channel = args.get(1).expect("Channel must be given as an argument.");
 
     // Connect to freenode and use no not reconnect.
-    let (writer, reader) = connect("irc.freenode.net:6667",
-                                   ReconnectionSettings::DoNotReconnect,
-                                   UTF_8).unwrap();
-    writer.raw(format!("USER {} 8 * :{}\n", "peekaboo", "peekaboo"));
-    writer.raw(format!("NICK {}\n", "peekaboo"));
+    let mut cm = ConnectionManager::new();
 
-    // Receive events.
-    for event in reader.iter() {
-        println!("{:?}", event);
-        match event {
-            Event::Message(msg) => {
-                if msg.code == Code::RplWelcome {
-                    // join channel, no password
-                    writer.raw(format!("JOIN {}\n", channel));
+    struct H(String);
+
+    impl RawEvents for H {
+        fn connect(&mut self, mut conn: Writer) {
+            println!("Connected");
+            conn.write("USER simon 8 * :simon\n");
+            conn.write("NICK peekaboo\n");
+        }
+        fn disconnect(&mut self) {
+            println!("Disconnected");
+        }
+        fn message(&mut self, mut w: Writer, msg: Message) {
+            println!("{:?}", msg);
+            match msg.code {
+                Code::RplWelcome => {
+                    w.write(format!("JOIN {}\n", self.0));
                 }
-                // JOIN is sent when you join a channel.
-                if msg.code == Code::Join {
-                    // If there is a prefix...
-                    if let Some(prefix) = msg.prefix {
-                        match prefix {
-                            // And the prefix is a user...
-                            Prefix::User(user) => {
-                                // And that user's nick is peekaboo, we've joined the channel!
-                                if user.nickname == "peekaboo" {
-                                    writer.raw(format!("PRIVMSG {} :{}\n", channel, "peekaboo"));
-                                    // Note that if the reconnection settings said to reconnect,
-                                    // it would. Close would "really" stop it.
-                                    writer.raw(format!("QUIT :{}\n", "peekaboo"));
-                                    // writer.close();
-                                }
-                            }
-                            _ => {}
-                        }
-                    }
+                Code::Join => {
+                    w.write(format!("PRIVMSG {} :peekaboo\n", self.0));
+                    w.write(format!("QUIT :peekaboo\n"));
                 }
+                _ => {}
             }
-            _ => {}
+        }
+        fn error(&mut self, err: io::Error) {
+            println!("Error {:?}", err);
         }
     }
+
+    cm.connect_to("irc.freenode.net:6667", H(channel.clone()));
+
+    cm.run();
 }

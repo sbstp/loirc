@@ -15,4 +15,4 @@ exclude = ["docs.sh"]
 bytes = "0.3"
 encoding = "0.2.32"
 mio = "0.5"
-slab = "0.2"
+slab = "0.1"
