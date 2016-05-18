@@ -3,6 +3,7 @@ extern crate encoding;
 
 use std::env;
 use std::io;
+use std::time::Duration;
 
 use loirc::{Code, ConnectionManager, Connection, Message, RawEvents, Writer};
 
@@ -31,20 +32,20 @@ fn main() {
             match msg.code {
                 Code::RplWelcome => {
                     w.write(format!("JOIN {}\n", self.0));
+                    w.write("PING DEADBEEF\n");
                 }
                 Code::Join => {
                     w.write(format!("PRIVMSG {} :peekaboo\n", self.0));
-                    w.write(format!("QUIT :peekaboo\n"));
+                    //w.write(format!("QUIT :peekaboo\n"));
                 }
                 _ => {}
             }
         }
-        fn error(&mut self, err: io::Error) {
-            println!("Error {:?}", err);
-        }
     }
 
-    cm.connect_to("irc.freenode.net:6667", H(channel.clone()));
+    cm.connect("irc.mozilla.org:6667", H(channel.clone()), Some(Duration::from_secs(5)), None).unwrap();
+
+    println!("Post connect");
 
     cm.run();
 }

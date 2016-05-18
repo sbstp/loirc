@@ -13,6 +13,6 @@ exclude = ["docs.sh"]
 
 [dependencies]
 bytes = "0.3"
-encoding = "0.2.32"
+encoding = "0.2"
 mio = "0.5"
 slab = "0.1"
